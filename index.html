@@ -548,6 +548,12 @@ body{font-family:"Tajawal",sans-serif;background:var(--bg);color:var(--text);dir
 @media(max-width:768px){
   .desktop-only{display:none !important}
 }
+
+.of-wrap{max-width:560px;margin:0 auto}
+.of-sec{background:var(--s1);border:1px solid var(--border);border-radius:var(--r2);padding:14px;margin-bottom:12px}
+.of-sec-t{font-size:12px;font-weight:700;color:var(--g);margin-bottom:12px}
+.of-btn{width:100%;padding:14px;background:var(--g);color:#000;border:none;border-radius:var(--r2);font-family:inherit;font-size:14px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px}
+.of-btn:active{opacity:.85}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer onerror="console.log('Supabase SDK not loaded')"></script>
 
@@ -771,20 +777,52 @@ body{font-family:"Tajawal",sans-serif;background:var(--bg);color:var(--text);dir
 
       <!-- OWNER FORM -->
       <div class="pg" id="pg-ownerForm">
-        <div class="ph"><div><div class="ph-t">نموذج <em>المالك</em></div><div class="ph-s">الرابط: <b style="color:var(--g)">mergab-realestate.vercel.app/owner-form</b></div></div><button class="btn bg bsm" onclick="showToast('✅ تم نسخ الرابط!')">📋 نسخ</button></div>
-        <div class="of-wrap">
-          <div style="background:var(--gbg);border:1px solid rgba(184,144,42,.18);border-radius:var(--r2);padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px"><div style="font-size:22px">📲</div><div><div style="font-size:11px;font-weight:700;color:var(--g)">أرسل الرابط للمالك على واتساب</div><div style="font-size:9px;color:var(--sub);margin-top:2px">يعبّي البيانات وتجيك في طلبات المالكين تلقائياً</div></div></div>
-          <div class="of-card"><h3>👤 بيانات المالك</h3><div class="g2"><div class="ff"><label>الاسم الكامل *</label><input placeholder="اسم المالك"></div><div class="ff"><label>📱 الجوال *</label><input placeholder="05xxxxxxxx" type="tel"></div></div></div>
-          <div class="of-card"><h3>🏗 تفاصيل العقار</h3>
-            <div class="g2"><div class="ff"><label>نوع العقار *</label><select><option>-- اختر --</option><option>فيلا</option><option>شقة</option><option>استوديو</option><option>مستودع</option></select></div><div class="ff"><label>نوع الصفقة *</label><select><option>-- اختر --</option><option>بيع</option><option>إيجار</option><option>إستثمار</option></select></div><div class="ff"><label>المدينة *</label><select><option>-- اختر --</option><option>الرياض</option><option>جدة</option><option>ابها</option></select></div><div class="ff"><label>الحي</label><input placeholder="الحي"></div><div class="ff"><label>الغرف</label><input type="number" placeholder="0"></div><div class="ff"><label>المساحة م²</label><input type="number" placeholder="0"></div><div class="ff"><label>السعر (ر.س)</label><input type="number" placeholder="0"></div><div class="ff"><label>الدور</label><select><option>أرضي</option><option>أول</option><option>ثاني</option></select></div></div>
-            <div class="ff"><label>المميزات</label><textarea placeholder="اذكر مميزات عقارك..."></textarea></div>
+        <div class="ph">
+          <div>
+            <div class="ph-t">نموذج <em>المالك</em></div>
+            <div class="ph-s">أرسل الرابط للمالك على واتساب</div>
           </div>
-          <button class="btn bg" style="width:100%;justify-content:center;padding:12px;font-size:13px" onclick="showToast('✅ تم إرسال الطلب!')">📤 إرسال الطلب</button>
+          <button class="btn bg bsm" onclick="cpOwnerLink()">📋 نسخ الرابط</button>
         </div>
-      </div>
-
-      <!-- SETTINGS -->
-      <div class="pg" id="pg-settings">
+        <div style="background:var(--gbg);border:1px solid rgba(184,144,42,.18);border-radius:var(--r2);padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px">
+          <div style="font-size:22px">📲</div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:var(--g)">أرسل الرابط للمالك على واتساب</div>
+            <div style="font-size:10px;color:var(--sub);margin-top:2px">يعبي البيانات وتجيك في طلبات المالكين تلقائياً</div>
+          </div>
+        </div>
+        <div class="of-wrap">
+          <div class="of-sec">
+            <div class="of-sec-t">👤 بيانات المالك</div>
+            <div class="ff" style="margin-bottom:11px"><label>الاسم الكامل *</label><input id="of_name" placeholder="اسم المالك" class="inp"></div>
+            <div class="ff"><label>📱 الجوال *</label><input id="of_phone" placeholder="05xxxxxxxx" type="tel" class="inp"></div>
+          </div>
+          <div class="of-sec">
+            <div class="of-sec-t">🏗 تفاصيل العقار</div>
+            <div class="ff" style="margin-bottom:11px"><label>نوع العقار *</label>
+              <select id="of_type" class="inp"><option value="">-- اختر --</option><option>فيلا</option><option>شقة</option><option>استوديو</option><option>مستودع</option><option>محلات</option><option>أرض</option></select>
+            </div>
+            <div class="ff" style="margin-bottom:11px"><label>نوع الصفقة *</label>
+              <select id="of_deal" class="inp"><option value="">-- اختر --</option><option>بيع</option><option>إيجار</option><option>إستثمار</option></select>
+            </div>
+            <div class="ff" style="margin-bottom:11px"><label>المدينة *</label>
+              <select id="of_city" class="inp"><option value="">-- اختر --</option><option>الرياض</option><option>جدة</option><option>مكة المكرمة</option><option>المدينة المنورة</option><option>الدمام</option><option>الشرقية</option><option>ابها</option><option>تبوك</option></select>
+            </div>
+            <div class="ff" style="margin-bottom:11px"><label>الحي</label><input id="of_dist" placeholder="الحي" class="inp"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:11px">
+              <div class="ff"><label>الغرف</label><input id="of_rm" type="number" placeholder="0" class="inp"></div>
+              <div class="ff"><label>المساحة م²</label><input id="of_ar" type="number" placeholder="0" class="inp"></div>
+            </div>
+            <div class="ff" style="margin-bottom:11px"><label>السعر (ر.س)</label><input id="of_pr" type="number" placeholder="0" class="inp" oninput="calcOwnerComm()"></div>
+            <div id="of_comm_box" style="display:none;background:var(--gbg);border:1px solid rgba(184,144,42,.18);border-radius:8px;padding:8px 12px;font-size:11px;margin-bottom:11px;display:flex;justify-content:space-between">
+              <span style="color:var(--sub)">🤝 العمولة (2.5%)</span>
+              <span id="of_comm_val" style="font-weight:700;color:var(--g)">—</span>
+            </div>
+            <div class="ff"><label>✨ المميزات</label><textarea id="of_dt" placeholder="اذكر مميزات عقارك..." class="inp" rows="3"></textarea></div>
+          </div>
+          <button class="of-btn" onclick="submitOwnerForm()">📤 إرسال الطلب</button>
+        </div>
+      id="pg-settings">
         <div class="ph"><div><div class="ph-t">⚙️ <em>الإعدادات</em></div><div class="ph-s">تخصيص النظام وإدارة الحساب</div></div></div>
         <div class="snav">
           <div class="sni on" onclick="showS('account',this)">👤 الحساب</div>
@@ -951,6 +989,56 @@ body{font-family:"Tajawal",sans-serif;background:var(--bg);color:var(--text);dir
 <div class="toast" id="toast"></div>
 
 <script>
+function cpOwnerLink(){
+  var url = window.location.href.split('?')[0]
+  navigator.clipboard.writeText(url).then(function(){showToast('✅ تم نسخ الرابط!')})
+}
+function calcOwnerComm(){
+  var p = Number(document.getElementById('of_pr').value)||0
+  var box = document.getElementById('of_comm_box')
+  if(p > 0){
+    document.getElementById('of_comm_val').textContent = Math.round(p*.025).toLocaleString('ar-SA') + ' ر.س'
+    box.style.display = 'flex'
+  } else {
+    box.style.display = 'none'
+  }
+}
+
+function submitOwnerForm(){
+  var name = document.getElementById('of_name') ? document.getElementById('of_name').value : ''
+  var phone = document.getElementById('of_phone') ? document.getElementById('of_phone').value : ''
+  if(!name || !phone){showToast('يرجى ملء الاسم والجوال','e');return}
+  
+  var data = {
+    owner_name: name,
+    owner_phone: phone,
+    property_type: document.getElementById('of_type') ? document.getElementById('of_type').value : '',
+    deal_type: document.getElementById('of_deal') ? document.getElementById('of_deal').value : '',
+    city: document.getElementById('of_city') ? document.getElementById('of_city').value : '',
+    district: document.getElementById('of_dist') ? document.getElementById('of_dist').value : '',
+    rooms: Number(document.getElementById('of_rm') ? document.getElementById('of_rm').value : 0)||0,
+    area: Number(document.getElementById('of_ar') ? document.getElementById('of_ar').value : 0)||0,
+    price: Number(document.getElementById('of_pr') ? document.getElementById('of_pr').value : 0)||0,
+    details: document.getElementById('of_dt') ? document.getElementById('of_dt').value : ''
+  }
+  
+  saveRequestSB(data)
+  showToast('✅ تم إرسال الطلب!')
+  sendNotif('🔔 طلب مالك جديد', 'تم استلام طلب من ' + name)
+}
+
+// Push Notifications
+function reqNotif(){
+  if('Notification' in window && Notification.permission === 'default'){
+    Notification.requestPermission()
+  }
+}
+function sendNotif(title, body){
+  if(Notification.permission === 'granted'){
+    new Notification(title, {body: body, icon: '💎'})
+  }
+}
+
 // ══ SUPABASE ══
 var _sb = null
 function getSB(){
@@ -1014,6 +1102,11 @@ async function saveOfferSB(data){
 }
 
 async function saveRequestSB(data){
+  // إشعار واتساب للمدير
+  var adminPhone = '966' + '505556655'  // رقم المدير
+  var msg = 'طلب مالك جديد!' + '\n' + 'الاسم: ' + (data.owner_name||'') + '\n' + 'الجوال: ' + (data.owner_phone||'') + '\n' + 'النوع: ' + (data.property_type||'') + '\n' + 'المدينة: ' + (data.city||'') + '\n' + 'السعر: ' + (data.price||0).toLocaleString('ar-SA') + ' ر.س'
+  window.open('https://wa.me/' + adminPhone + '?text=' + encodeURIComponent(msg), '_blank')
+
   var _sb=getSB();if(!_sb)return false
   try{
     var r=await _sb.from('owner_requests').insert([data])
@@ -1032,8 +1125,7 @@ async function loadAll(){
 }
 
 
-const offers=[
-  {id:1,code:'E-001',type:'فيلا',deal:'بيع',city:'الرياض',district:'الملقا',floor:'أرضي',rooms:4,baths:3,area:300,price:700000,comm:17500,pay:null,status:'مباع ✅',details:'بلكونة وسطح كبير',owner:'احمد علي',phone:'0505556655',emoji:'🏡',dir:'شمال',furn:'غير مفروش',match:['محمد علي','سارة الغامدي']},
+const offers=[]},
   {id:2,code:'E-002',type:'شقة',deal:'إستثمار',city:'جدة',district:'الروضة',floor:'أول',rooms:3,baths:2,area:150,price:500000,comm:12500,pay:null,status:'متاح 🟢',details:'',owner:'محمد حبيب',phone:'0595849384',emoji:'🏢',dir:'شرق',furn:'مفروش',match:['احمد سامي']},
   {id:3,code:'E-003',type:'فيلا',deal:'إيجار',city:'ابها',district:'الفيصلية',floor:'ثاني',rooms:6,baths:4,area:600,price:60000,comm:1500,pay:'سنوي 🗓',status:'متاح 🟢',details:'حديقة واسعة',owner:'سعد اليامي',phone:'0598443343',emoji:'🏡',dir:'غرب',furn:'نص مفروش',match:['سعد اليامي','فاطمة العمري']},
   {id:4,code:'E-004',type:'شقة',deal:'إيجار',city:'ابها',district:'الملقا',floor:'أول',rooms:4,baths:2,area:300,price:700000,comm:17500,pay:'شهري 📅',status:'مؤجر ✅',details:'موقع مميز',owner:'خالد السهلي',phone:'0505758347',emoji:'🏢',dir:'جنوب',furn:'غير مفروش',match:[]},
@@ -1041,26 +1133,9 @@ const offers=[
   {id:6,code:'E-006',type:'استوديو',deal:'إيجار',city:'المدينة',district:'الفيصلية',floor:'أول',rooms:1,baths:1,area:600,price:60000,comm:1500,pay:'ربع سنوي 📆',status:'تحت التفاوض 🟡',details:'بلكونة',owner:'فهد المطيري',phone:'0503757823',emoji:'🛋️',dir:'',furn:'مفروش',match:[]},
   {id:7,code:'E-007',type:'محلات',deal:'إيجار',city:'جدة',district:'الروضة',floor:'أرضي',rooms:0,baths:0,area:0,price:0,comm:0,pay:'نص سنوي 📋',status:'متاح 🟢',details:'',owner:'محمد حبيب',phone:'0595849384',emoji:'🏪',dir:'',furn:'',match:[]},
 ]
-const owners=[
-  {code:'M001',name:'احمد علي',phone:'0505556655',city:'الرياض',cnt:2},
-  {code:'M002',name:'محمد حبيب',phone:'0595849384',city:'جدة',cnt:2},
-  {code:'M003',name:'سعد اليامي',phone:'0598443343',city:'ابها',cnt:1},
-  {code:'M004',name:'خالد السهلي',phone:'0505758347',city:'الشرقية',cnt:2},
-  {code:'M005',name:'فهد المطيري',phone:'0503757823',city:'المدينة',cnt:1},
-]
-const clients=[
-  {code:'C001',name:'محمد علي',phone:'0505657840',city:'الرياض',req:'بيع',type:'شقة',bF:700000,bT:1000000,offer:'E-004',closed:false},
-  {code:'C002',name:'احمد سامي',phone:'0505758347',city:'جدة',req:'إستثمار',type:'فيلا',bF:500000,bT:500000,offer:'E-001',closed:true},
-  {code:'C003',name:'سعد اليامي',phone:'0598443343',city:'ابها',req:'إيجار',type:'شقة',bF:60000,bT:60000,offer:'',closed:false},
-  {code:'C004',name:'محمد علي',phone:'0505657840',city:'ابها',req:'إيجار',type:'شقة',bF:700000,bT:700000,offer:'',closed:false},
-  {code:'C005',name:'احمد سامي',phone:'0505758347',city:'الشرقية',req:'بيع',type:'فيلا',bF:500000,bT:500000,offer:'E-005',closed:false},
-  {code:'C006',name:'سعد اليامي',phone:'0598443343',city:'الرياض',req:'بيع',type:'شقة',bF:60000,bT:60000,offer:'',closed:false},
-]
-const reqs=[
-  {id:1,name:'عبدالله الغامدي',phone:'0501234567',city:'الرياض',type:'فيلا',deal:'بيع',district:'النرجس',floor:'أرضي',rooms:5,area:400,price:950000,details:'حديقة كبيرة'},
-  {id:2,name:'سلطان العتيبي',phone:'0559876543',city:'جدة',type:'شقة',deal:'إيجار',district:'الحمراء',floor:'ثالث',rooms:3,area:180,price:45000,details:'مطبخ راكب'},
-  {id:3,name:'ناصر القحطاني',phone:'0533456789',city:'ابها',type:'أرض',deal:'بيع',district:'المحالة',floor:'—',rooms:0,area:800,price:300000,details:'على شارعين'},
-]
+const owners=[]
+const clients=[]
+const reqs=[]
 const CREDS={u:'Nawaf',p:'Aa1234'}
 
 var pc=function(s){return s.includes('متاح')?'pl-av':s.includes('مباع')?'pl-so':s.includes('مؤجر')?'pl-re':s.includes('تفاوض')?'pl-ng':''}
@@ -1104,7 +1179,7 @@ function quickEnter(){document.getElementById('scr-login').classList.remove('on'
 document.getElementById('lp').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin()})
 document.getElementById('lu').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('lp').focus()})
 
-function initMain(){
+function initMain(){reqNotif();
   loadAllDataFromDB().then(function(){
     renderOv()
     filtered=offers.slice()
