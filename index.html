@@ -989,6 +989,18 @@ body{font-family:"Tajawal",sans-serif;background:var(--bg);color:var(--text);dir
 <div class="toast" id="toast"></div>
 
 <script>
+// تحقق من رابط المالك
+if(window.location.search.includes('owner=1') || window.location.hash === '#owner'){
+  document.addEventListener('DOMContentLoaded', function(){
+    var login = document.getElementById('scr-login')
+    var main = document.getElementById('scr-main')
+    if(login) login.classList.remove('on')
+    if(main) main.classList.add('on')
+    initMain()
+    setTimeout(function(){goPage('ownerForm')}, 200)
+  })
+}
+
 function cpOwnerLink(){
   var url = window.location.href.split('?')[0]
   navigator.clipboard.writeText(url).then(function(){showToast('✅ تم نسخ الرابط!')})
@@ -1159,7 +1171,7 @@ function doLogin(){
   btn.style.opacity='.7'
   document.getElementById('lerr').classList.remove('on')
   setTimeout(function(){
-    if(u===CREDS.u&&p===CREDS.p){
+    if(u.toLowerCase()===CREDS.u.toLowerCase()&&p===CREDS.p){
       document.getElementById('sov').classList.add('on')
       setTimeout(function(){
         document.getElementById('sov').classList.remove('on')
