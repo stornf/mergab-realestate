@@ -555,9 +555,9 @@ body{font-family:"Tajawal",sans-serif;background:var(--bg);color:var(--text);dir
 .of-btn{width:100%;padding:14px;background:var(--g);color:#000;border:none;border-radius:var(--r2);font-family:inherit;font-size:14px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px}
 .of-btn:active{opacity:.85}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer onerror="console.log('Supabase SDK not loaded')"></script>
+</script>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer onerror="console.log('Supabase SDK not loaded')"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -1042,11 +1042,15 @@ function sendNotif(title, body){
 // ══ SUPABASE ══
 var _sb = null
 function getSB(){
-  if(_sb)return _sb
-  if(window.supabase){
-    _sb=window.supabase.createClient('https://ontnilzksopzrlkflxnc.supabase.co','sb_publishable_CX8aZRJci63Rr0KB6UaRJQ_GgSQBsWE')
-    return _sb
-  }
+  try{
+    if(window._sb)return window._sb
+    if(window.supabase && window.supabase.createClient){
+      window._sb=window.supabase.createClient('https://ontnilzksopzrlkflxnc.supabase.co','sb_publishable_CX8aZRJci63Rr0KB6UaRJQ_GgSQBsWE')
+      return window._sb
+    }
+  }catch(e){console.log('SB error:',e)}
+  return null
+}
   return null
 }
 
