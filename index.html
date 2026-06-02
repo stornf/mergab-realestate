@@ -1166,27 +1166,14 @@ function doLogin(){
   var u=document.getElementById('lu').value.trim()
   var p=document.getElementById('lp').value
   if(!u||!p){showLErr('يرجى ملء جميع الحقول');return}
-  var btn=document.getElementById('lbtn')
-  btn.textContent='⏳ جاري التحقق...'
-  btn.style.opacity='.7'
-  document.getElementById('lerr').classList.remove('on')
-  setTimeout(function(){
-    if(u.toLowerCase()===CREDS.u.toLowerCase()&&p===CREDS.p){
-      document.getElementById('sov').classList.add('on')
-      setTimeout(function(){
-        document.getElementById('sov').classList.remove('on')
-        document.getElementById('scr-login').classList.remove('on')
-        document.getElementById('scr-main').classList.add('on')
-        initMain()
-      },2000)
-    }else{
-      _att++
-      btn.textContent='دخول للنظام ←'
-      btn.style.opacity='1'
-      showLErr(_att>=3?'محاولات كثيرة — انتظر':'اسم المستخدم أو كلمة المرور خاطئة ('+_att+'/3)')
-      document.getElementById('lp').value=''
-    }
-  },1100)
+  if(u.toLowerCase()===CREDS.u.toLowerCase()&&p===CREDS.p){
+    document.getElementById('scr-login').classList.remove('on')
+    document.getElementById('scr-main').classList.add('on')
+    initMain()
+  }else{
+    showLErr('اسم المستخدم أو كلمة المرور خاطئة')
+    document.getElementById('lp').value=''
+  }
 }
 function showLErr(m){document.getElementById('lerr-t').textContent=m;var e=document.getElementById('lerr');e.classList.remove('on');setTimeout(function(){e.classList.add('on')},10)}
 function toggleEye(){var i=document.getElementById('lp'),b=document.getElementById('eye');i.type=i.type==='password'?'text':'password';b.textContent=i.type==='password'?'👁':'🙈'}
@@ -1204,11 +1191,14 @@ function quickEnter(){
 document.getElementById('lp').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin()})
 document.getElementById('lu').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('lp').focus()})
 
-function initMain(){reqNotif();
-  loadAll().then(function(){
-    renderOv()
-    filtered=offers.slice()
-  })
+function initMain(){
+  try{reqNotif()}catch(e){}
+  goPage('overview')
+  renderOv()
+  try{
+    loadAll().catch(function(e){console.log('loadAll error:',e)})
+  }catch(e){console.log('initMain error:',e)}
+})
   goPage('overview')
 }
 
