@@ -1164,14 +1164,14 @@ var BC={overview:'نظرة عامة',offers:'العروض العقارية',addO
 var _att=0
 function doLogin(){
   var u=document.getElementById('lu').value.trim()
-  var p=document.getElementById('lp').value
-  if(!u||!p){showLErr('يرجى ملء جميع الحقول');return}
-  if(u.toLowerCase()===CREDS.u.toLowerCase()&&p===CREDS.p){
-    document.getElementById('scr-login').classList.remove('on')
-    document.getElementById('scr-main').classList.add('on')
+  var p=document.getElementById('lp').value.trim()
+  if(u.toLowerCase()==='nawaf' && p==='Aa1234'){
+    document.getElementById('scr-login').style.display='none'
+    document.getElementById('scr-main').style.display='flex'
+    document.getElementById('scr-main').style.flexDirection='row'
     initMain()
-  }else{
-    showLErr('اسم المستخدم أو كلمة المرور خاطئة')
+  } else {
+    alert('اسم المستخدم أو كلمة المرور خاطئة')
     document.getElementById('lp').value=''
   }
 }
