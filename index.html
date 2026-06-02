@@ -554,10 +554,12 @@ body{font-family:"Tajawal",sans-serif;background:var(--bg);color:var(--text);dir
 .of-sec-t{font-size:12px;font-weight:700;color:var(--g);margin-bottom:12px}
 .of-btn{width:100%;padding:14px;background:var(--g);color:#000;border:none;border-radius:var(--r2);font-family:inherit;font-size:14px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px}
 .of-btn:active{opacity:.85}
+
+.pg{display:none}
 </style>
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 </head>
 <body>
 
@@ -633,7 +635,7 @@ body{font-family:"Tajawal",sans-serif;background:var(--bg);color:var(--text);dir
     <div class="pgs" id="pages" style="background:var(--bg)">
 
       <!-- OVERVIEW -->
-      <div class="pg on" id="pg-overview">
+      <div class="pg on" id="pg-overview" style="display:block">
         <div class="ph"><div><div class="ph-t">نظرة <em>عامة</em></div><div class="ph-s">ملخص نشاطك اليوم — Supabase متصل ✅</div></div><div class="btns"><button class="btn bo bsm" onclick="goPage('offers')">📋 العروض</button><button class="btn bg" onclick="openQA()">➕ عرض جديد</button></div></div>
         <div class="s4">
           <div class="stat sg" onclick="goPage('offers')"><div class="stat-ic">🏠</div><div class="stat-n">7</div><div class="stat-l">إجمالي العروض</div><div class="stat-tr tr-up">↑ 2 هذا الشهر</div></div>
@@ -701,7 +703,10 @@ body{font-family:"Tajawal",sans-serif;background:var(--bg);color:var(--text);dir
         </div>
         <div id="af1">
           <div class="fc"><div class="fc-t">👤 بيانات المالك</div>
-            <div class="g2"><div class="ff"><label>اختر المالك</label><select id="af_own" onchange="fillOwnF()"><option value="">-- اختر --</option><option value="M001" data-p="0505556655" data-n="احمد علي">احمد علي (M001)</option><option value="M002" data-p="0595849384" data-n="محمد حبيب">محمد حبيب (M002)</option><option value="M003" data-p="0598443343" data-n="سعد اليامي">سعد اليامي (M003)</option><option value="M004" data-p="0505758347" data-n="خالد السهلي">خالد السهلي (M004)</option><option value="new">➕ مالك جديد</option></select></div><div class="ff"><label>📱 الجوال</label><input id="af_ph" placeholder="05xxxxxxxx" type="tel"></div></div>
+            <div class="g2"><div class="ff"><label>اختر المالك</label><select id="af_own" class="inp" onchange="fillOwnF()">
+              <option value="">-- اختر مالك --</option>
+              <option value="new">+ إضافة مالك جديد</option>
+            </select></div><div class="ff"><label>📱 الجوال</label><input id="af_ph" placeholder="05xxxxxxxx" type="tel"></div></div>
             <div id="newOF" style="display:none"><div class="g2"><div class="ff"><label>الاسم</label><input id="af_nn"></div><div class="ff"><label>الهوية</label><input id="af_ni"></div></div></div>
           </div>
           <div class="nbtns"><button class="nb" onclick="aStep(2)">التالي — تفاصيل العقار ←</button></div>
@@ -962,7 +967,7 @@ body{font-family:"Tajawal",sans-serif;background:var(--bg);color:var(--text);dir
       <div class="qa-hd"><h3>➕ إضافة إعلان سريع</h3><div class="qa-cl" onclick="closeQA()">×</div></div>
       <div class="qa-bd">
         <div class="qa-row">
-          <div class="qa-f"><label>المالك</label><select><option>-- اختر --</option><option>احمد علي (M001)</option><option>محمد حبيب (M002)</option><option>سعد اليامي (M003)</option></select></div>
+          <div class="qa-f"><label>المالك</label><select><option>-- اختر --</option></select></div>
           <div class="qa-f"><label>نوع العقار</label><select><option>-- اختر --</option><option>فيلا</option><option>شقة</option><option>استوديو</option><option>مستودع</option></select></div>
         </div>
         <div class="qa-row">
@@ -988,358 +993,145 @@ body{font-family:"Tajawal",sans-serif;background:var(--bg);color:var(--text);dir
 
 <div class="toast" id="toast"></div>
 
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// تحقق من رابط المالك
-if(window.location.search.includes('owner=1') || window.location.hash === '#owner'){
-  document.addEventListener('DOMContentLoaded', function(){
-    var login = document.getElementById('scr-login')
-    var main = document.getElementById('scr-main')
-    if(login) login.classList.remove('on')
-    if(main) main.classList.add('on')
-    initMain()
-    setTimeout(function(){goPage('ownerForm')}, 200)
-  })
-}
-
-function cpOwnerLink(){
-  var url = window.location.href.split('?')[0]
-  navigator.clipboard.writeText(url).then(function(){showToast('✅ تم نسخ الرابط!')})
-}
-function calcOwnerComm(){
-  var p = Number(document.getElementById('of_pr').value)||0
-  var box = document.getElementById('of_comm_box')
-  if(p > 0){
-    document.getElementById('of_comm_val').textContent = Math.round(p*.025).toLocaleString('ar-SA') + ' ر.س'
-    box.style.display = 'flex'
-  } else {
-    box.style.display = 'none'
-  }
-}
-
-function submitOwnerForm(){
-  var name = document.getElementById('of_name') ? document.getElementById('of_name').value : ''
-  var phone = document.getElementById('of_phone') ? document.getElementById('of_phone').value : ''
-  if(!name || !phone){showToast('يرجى ملء الاسم والجوال','e');return}
-  
-  var data = {
-    owner_name: name,
-    owner_phone: phone,
-    property_type: document.getElementById('of_type') ? document.getElementById('of_type').value : '',
-    deal_type: document.getElementById('of_deal') ? document.getElementById('of_deal').value : '',
-    city: document.getElementById('of_city') ? document.getElementById('of_city').value : '',
-    district: document.getElementById('of_dist') ? document.getElementById('of_dist').value : '',
-    rooms: Number(document.getElementById('of_rm') ? document.getElementById('of_rm').value : 0)||0,
-    area: Number(document.getElementById('of_ar') ? document.getElementById('of_ar').value : 0)||0,
-    price: Number(document.getElementById('of_pr') ? document.getElementById('of_pr').value : 0)||0,
-    details: document.getElementById('of_dt') ? document.getElementById('of_dt').value : ''
-  }
-  
-  saveRequestSB(data)
-  showToast('✅ تم إرسال الطلب!')
-  sendNotif('🔔 طلب مالك جديد', 'تم استلام طلب من ' + name)
-}
-
-// Push Notifications
-function reqNotif(){
-  if('Notification' in window && Notification.permission === 'default'){
-    Notification.requestPermission()
-  }
-}
-function sendNotif(title, body){
-  if(Notification.permission === 'granted'){
-    new Notification(title, {body: body, icon: '💎'})
-  }
-}
-
-// ══ SUPABASE ══
-var _sb = null
-function getSB(){
-  try{
-    if(window._sb)return window._sb
-    if(window.supabase && window.supabase.createClient){
-      window._sb=window.supabase.createClient('https://ontnilzksopzrlkflxnc.supabase.co','sb_publishable_CX8aZRJci63Rr0KB6UaRJQ_GgSQBsWE')
-      return window._sb
-    }
-  }catch(e){console.log('SB error:',e)}
-  return null
-}
-  return null
-}
-
-async function loadOffers(){
-  var _sb=getSB();if(!_sb)return
-  try{
-    var r=await _sb.from('offers').select('*').order('created_at',{ascending:false})
-    if(r.error)throw r.error
-    if(r.data&&r.data.length){
-      offers=r.data.map(function(o){return{id:o.id,code:o.code||'E-'+String(o.id).padStart(3,'0'),type:o.type||'',deal:o.deal||'',city:o.city||'',district:o.district||'',floor:o.floor||'',rooms:o.rooms||0,baths:o.baths||0,area:o.area||0,price:o.price||0,comm:o.comm||0,pay:o.pay||null,status:o.status||'متاح 🟢',details:o.details||'',owner:o.owner_name||'',phone:o.owner_phone||'',emoji:o.emoji||'🏠',dir:o.dir||'',furn:o.furn||'',match:[]}})
-      filtered=offers.slice()
-      showToast('✅ تم تحميل '+offers.length+' عروض')
-    }
-  }catch(e){console.log('offers:',e.message)}
-}
-
-async function loadOwners(){
-  var _sb=getSB();if(!_sb)return
-  try{
-    var r=await _sb.from('owners').select('*').order('created_at',{ascending:false})
-    if(r.error)throw r.error
-    if(r.data&&r.data.length){owners=r.data.map(function(o){return{code:o.code||'M-'+o.id,name:o.name||'',phone:o.phone||'',city:o.city||'',cnt:o.offers_count||0}})}
-  }catch(e){console.log('owners:',e.message)}
-}
-
-async function loadClients(){
-  var _sb=getSB();if(!_sb)return
-  try{
-    var r=await _sb.from('clients').select('*').order('created_at',{ascending:false})
-    if(r.error)throw r.error
-    if(r.data&&r.data.length){clients=r.data.map(function(c){return{code:c.code||'C-'+c.id,name:c.name||'',phone:c.phone||'',city:c.city||'',req:c.request_type||'بيع',type:c.property_type||'',bF:c.budget_from||0,bT:c.budget_to||0,offer:c.matched_offer||'',closed:c.is_closed||false}})}
-  }catch(e){console.log('clients:',e.message)}
-}
-
-async function loadRequests(){
-  var _sb=getSB();if(!_sb)return
-  try{
-    var r=await _sb.from('owner_requests').select('*').order('created_at',{ascending:false})
-    if(r.error)throw r.error
-    if(r.data&&r.data.length){reqs=r.data.map(function(r2){return{id:r2.id,name:r2.owner_name||'',phone:r2.owner_phone||'',city:r2.city||'',type:r2.property_type||'',deal:r2.deal_type||'بيع',district:r2.district||'',floor:r2.floor||'—',rooms:r2.rooms||0,area:r2.area||0,price:r2.price||0,details:r2.details||''}})}
-  }catch(e){console.log('requests:',e.message)}
-}
-
-async function saveOfferSB(data){
-  var _sb=getSB();if(!_sb){showToast('Supabase غير متصل','e');return false}
-  try{
-    var r=await _sb.from('offers').insert([data])
-    if(r.error)throw r.error
-    showToast('✅ تم الحفظ في Supabase!')
-    await loadOffers()
-    return true
-  }catch(e){showToast('خطأ: '+e.message,'e');return false}
-}
-
-async function saveRequestSB(data){
-  // إشعار واتساب للمدير
-  var adminPhone = '966' + '505556655'  // رقم المدير
-  var msg = 'طلب مالك جديد!' + '\n' + 'الاسم: ' + (data.owner_name||'') + '\n' + 'الجوال: ' + (data.owner_phone||'') + '\n' + 'النوع: ' + (data.property_type||'') + '\n' + 'المدينة: ' + (data.city||'') + '\n' + 'السعر: ' + (data.price||0).toLocaleString('ar-SA') + ' ر.س'
-  window.open('https://wa.me/' + adminPhone + '?text=' + encodeURIComponent(msg), '_blank')
-
-  var _sb=getSB();if(!_sb)return false
-  try{
-    var r=await _sb.from('owner_requests').insert([data])
-    if(r.error)throw r.error
-    showToast('✅ تم إرسال الطلب!')
-    return true
-  }catch(e){showToast('خطأ في الإرسال','e');return false}
-}
-
-async function loadAll(){
-  var bc=document.getElementById('breadcrumb')
-  if(bc)bc.textContent='⏳ جاري التحميل...'
-  await Promise.all([loadOffers(),loadOwners(),loadClients(),loadRequests()])
-  if(bc)bc.textContent=BC['overview']||'نظرة عامة'
-  renderOv()
-}
-
-
-const offers=[]},
-  {id:2,code:'E-002',type:'شقة',deal:'إستثمار',city:'جدة',district:'الروضة',floor:'أول',rooms:3,baths:2,area:150,price:500000,comm:12500,pay:null,status:'متاح 🟢',details:'',owner:'محمد حبيب',phone:'0595849384',emoji:'🏢',dir:'شرق',furn:'مفروش',match:['احمد سامي']},
-  {id:3,code:'E-003',type:'فيلا',deal:'إيجار',city:'ابها',district:'الفيصلية',floor:'ثاني',rooms:6,baths:4,area:600,price:60000,comm:1500,pay:'سنوي 🗓',status:'متاح 🟢',details:'حديقة واسعة',owner:'سعد اليامي',phone:'0598443343',emoji:'🏡',dir:'غرب',furn:'نص مفروش',match:['سعد اليامي','فاطمة العمري']},
-  {id:4,code:'E-004',type:'شقة',deal:'إيجار',city:'ابها',district:'الملقا',floor:'أول',rooms:4,baths:2,area:300,price:700000,comm:17500,pay:'شهري 📅',status:'مؤجر ✅',details:'موقع مميز',owner:'خالد السهلي',phone:'0505758347',emoji:'🏢',dir:'جنوب',furn:'غير مفروش',match:[]},
-  {id:5,code:'E-005',type:'مستودع',deal:'بيع',city:'الشرقية',district:'الروضة',floor:'أرضي',rooms:0,baths:1,area:150,price:500000,comm:12500,pay:null,status:'متاح 🟢',details:'',owner:'خالد السهلي',phone:'0505758347',emoji:'🏭',dir:'',furn:'',match:['احمد سامي']},
-  {id:6,code:'E-006',type:'استوديو',deal:'إيجار',city:'المدينة',district:'الفيصلية',floor:'أول',rooms:1,baths:1,area:600,price:60000,comm:1500,pay:'ربع سنوي 📆',status:'تحت التفاوض 🟡',details:'بلكونة',owner:'فهد المطيري',phone:'0503757823',emoji:'🛋️',dir:'',furn:'مفروش',match:[]},
-  {id:7,code:'E-007',type:'محلات',deal:'إيجار',city:'جدة',district:'الروضة',floor:'أرضي',rooms:0,baths:0,area:0,price:0,comm:0,pay:'نص سنوي 📋',status:'متاح 🟢',details:'',owner:'محمد حبيب',phone:'0595849384',emoji:'🏪',dir:'',furn:'',match:[]},
-]
+const CREDS={u:'Nawaf',p:'Aa1234'}
+const offers=[]
 const owners=[]
 const clients=[]
 const reqs=[]
-const CREDS={u:'Nawaf',p:'Aa1234'}
-
-var pc=function(s){return s.includes('متاح')?'pl-av':s.includes('مباع')?'pl-so':s.includes('مؤجر')?'pl-re':s.includes('تفاوض')?'pl-ng':''}
-var sbg=function(s){return s.includes('متاح')?'rgba(21,128,61,.85)':s.includes('مباع')?'rgba(37,99,235,.85)':s.includes('مؤجر')?'rgba(124,58,237,.85)':s.includes('تفاوض')?'rgba(184,144,42,.9)':'rgba(100,100,100,.7)'}
-var stc=function(s){return s.includes('تفاوض')?'#000':'#fff'}
-var RC={'بيع':'var(--bl)','إيجار':'var(--gn)','إستثمار':'var(--g)'}
+var filtered=[],vMode='grid',stF=''
+var AD={type:'',deal:'',status:'متاح 🟢'},curSt=1,pCnt=0
+var currentMsg='',_att=0
 var PGS=['overview','offers','addOffer','owners','clients','requests','ownerForm','settings']
 var BC={overview:'نظرة عامة',offers:'العروض العقارية',addOffer:'إضافة عرض جديد',owners:'المالكون',clients:'متابعة العملاء',requests:'طلبات المالكين',ownerForm:'نموذج المالك',settings:'الإعدادات'}
 
-var _att=0
+function pc(s){return s.includes('متاح')?'pl-av':s.includes('مباع')?'pl-so':s.includes('مؤجر')?'pl-re':s.includes('تفاوض')?'pl-ng':''}
+function sbg(s){return s.includes('متاح')?'rgba(21,128,61,.85)':s.includes('مباع')?'rgba(37,99,235,.85)':s.includes('مؤجر')?'rgba(124,58,237,.85)':s.includes('تفاوض')?'rgba(184,144,42,.9)':'rgba(100,100,100,.7)'}
+function stc(s){return s.includes('تفاوض')?'#000':'#fff'}
+
 function doLogin(){
   var u=document.getElementById('lu').value.trim()
   var p=document.getElementById('lp').value.trim()
-  if(u.toLowerCase()==='nawaf' && p==='Aa1234'){
+  if(!u||!p){alert('يرجى ملء جميع الحقول');return}
+  if(u.toLowerCase()==='nawaf'&&p==='Aa1234'){
     document.getElementById('scr-login').style.display='none'
     document.getElementById('scr-main').style.display='flex'
-    document.getElementById('scr-main').style.flexDirection='row'
     initMain()
-  } else {
+  }else{
     alert('اسم المستخدم أو كلمة المرور خاطئة')
     document.getElementById('lp').value=''
   }
 }
-function showLErr(m){document.getElementById('lerr-t').textContent=m;var e=document.getElementById('lerr');e.classList.remove('on');setTimeout(function(){e.classList.add('on')},10)}
 function toggleEye(){var i=document.getElementById('lp'),b=document.getElementById('eye');i.type=i.type==='password'?'text':'password';b.textContent=i.type==='password'?'👁':'🙈'}
-function doLogout(){document.getElementById('scr-main').classList.remove('on');document.getElementById('scr-login').classList.add('on');document.getElementById('lu').value='';document.getElementById('lp').value=''}
-function quickEnter(){
-  var login=document.getElementById('scr-login')
-  var main=document.getElementById('scr-main')
-  if(login){login.style.display='none';login.classList.remove('on')}
-  if(main){main.style.display='flex';main.classList.add('on')}
-  setTimeout(function(){
-    initMain()
-    goPage('ownerForm')
-  },100)
-}
-document.getElementById('lp').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin()})
-document.getElementById('lu').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('lp').focus()})
+function doLogout(){document.getElementById('scr-main').style.display='none';document.getElementById('scr-login').style.display='flex';document.getElementById('lu').value='';document.getElementById('lp').value=''}
+function quickEnter(){document.getElementById('scr-login').style.display='none';document.getElementById('scr-main').style.display='flex';initMain();setTimeout(function(){goPage('ownerForm')},100)}
 
 function initMain(){
-  try{reqNotif()}catch(e){}
-  goPage('overview')
+  filtered=offers.slice()
+  PGS.forEach(function(p){var el=document.getElementById('pg-'+p);if(el)el.style.display='none'})
+  document.getElementById('pg-overview').style.display='block'
+  var bc=document.getElementById('breadcrumb');if(bc)bc.textContent='نظرة عامة'
   renderOv()
-  try{
-    loadAll().catch(function(e){console.log('loadAll error:',e)})
-  }catch(e){console.log('initMain error:',e)}
-})
-  goPage('overview')
+  updBnav('overview')
+  try{loadAll()}catch(e){console.log(e)}
+}
+
+function goPage(name){
+  PGS.forEach(function(p){var el=document.getElementById('pg-'+p);if(el)el.style.display=p===name?'block':'none'})
+  document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('on')})
+  var nav=document.getElementById('nav-'+name);if(nav)nav.classList.add('on')
+  var bc=document.getElementById('breadcrumb');if(bc)bc.textContent=BC[name]||name
+  if(name==='offers'){filtered=offers.slice();renderOffers()}
+  if(name==='owners')renderOwners()
+  if(name==='clients')renderCl()
+  if(name==='requests')renderReqs()
+  if(name==='addOffer')resetAdd()
+  var pages=document.getElementById('pages');if(pages)pages.scrollTop=0
+  updBnav(name)
 }
 
 function updBnav(name){
   document.querySelectorAll('.bnav-item').forEach(function(b){b.classList.remove('on')})
   var bn=document.getElementById('bn-'+name);if(bn)bn.classList.add('on')
 }
-function goPage(name){
-  PGS.forEach(function(p){var el=document.getElementById('pg-'+p);if(el)el.classList.toggle('on',p===name)})
-  document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('on')})
-  var nav=document.getElementById('nav-'+name);if(nav)nav.classList.add('on')
-  var bc=document.getElementById('breadcrumb');if(bc)bc.textContent=BC[name]||name
-  if(name==='offers')renderOffers()
-  if(name==='owners')renderOwners()
-  if(name==='clients')renderCl()
-  if(name==='requests')renderReqs()
-  if(name==='addOffer')resetAdd()
-  document.getElementById('pages').scrollTop=0
-  closeQA()
-  updBnav(name)
+
+function showToast(msg,t){
+  var el=document.getElementById('toast')
+  el.textContent=msg
+  el.style.background=(t==='e')?'var(--rd)':'var(--gn)'
+  el.classList.add('on')
+  setTimeout(function(){el.classList.remove('on')},2800)
 }
 
 function renderOv(){
   var h=''
   offers.slice(0,4).forEach(function(o){
-    h+='<div class="or" onclick="openOff('+o.id+')">'
-    h+='<div class="or-th">'+o.emoji+'</div>'
+    h+='<div class="or" onclick="openOff('+o.id+')"><div class="or-th">'+o.emoji+'</div>'
     h+='<div style="flex:1;min-width:0"><div class="or-nm">'+o.emoji+' '+o.deal+' '+o.type+' — '+o.city+'</div>'
     h+='<div class="or-mt">'+(o.district||'—')+' • '+(o.area||'—')+'م²</div>'
     h+='<span class="pl '+pc(o.status)+'">'+o.status+'</span></div>'
     h+='<div class="or-pr">'+(o.price?o.price.toLocaleString('ar-SA')+' ر.س':'—')+'</div></div>'
   })
-  document.getElementById('ovOffers').innerHTML=h
+  if(!offers.length)h='<div style="text-align:center;padding:30px;color:var(--sub)">لا توجد عروض بعد — أضف أول عرض!</div>'
+  var el=document.getElementById('ovOffers');if(el)el.innerHTML=h
 }
 
-var filtered=offers.slice(),vMode='grid',stF=''
 function renderOffers(){
   var cont=document.getElementById('offersCont')
   if(!filtered.length){cont.innerHTML='<div style="text-align:center;padding:40px;color:var(--sub)">🔍 لا توجد نتائج</div>';return}
-  var tot=filtered.filter(function(o){return o.status.includes('متاح')}).reduce(function(s,o){return s+o.price},0)
-  document.getElementById('totV').textContent=tot?tot.toLocaleString('ar-SA')+' ر.س':'—'
-  document.getElementById('ofCnt').textContent=filtered.length+' عروض'
   var h=''
-  if(vMode==='grid'){
-    cont.className='og'
-    filtered.forEach(function(o){
-      h+='<div class="ocard" onclick="openOff('+o.id+')">'
-      h+='<div class="oc-img"><span>'+o.emoji+'</span>'
-      h+='<span class="oc-st" style="background:'+sbg(o.status)+';color:'+stc(o.status)+'">'+o.status+'</span>'
-      h+='<span class="oc-dl">'+o.deal+'</span><span class="oc-cd">'+o.code+'</span>'
-      if(o.match.length)h+='<span class="oc-m">👥 '+o.match.length+'</span>'
-      h+='</div><div class="oc-b">'
-      h+='<div class="oc-t">'+o.emoji+' '+o.type+' — '+o.city+'</div>'
-      h+='<div class="oc-loc">📍 '+(o.district||'—')+' • 👤 '+o.owner+'</div>'
-      h+='<div class="oc-sp">'
-      if(o.rooms)h+='<span class="sp">🛏 '+o.rooms+'</span>'
-      if(o.baths)h+='<span class="sp">🚿 '+o.baths+'</span>'
-      if(o.area)h+='<span class="sp">📐 '+o.area+'م²</span>'
-      if(o.furn)h+='<span class="sp">'+o.furn+'</span>'
-      h+='</div><div class="oc-ft">'
-      h+='<div><div class="oc-pr">'+(o.price?o.price.toLocaleString('ar-SA')+' ر.س':'—')+'</div>'
-      if(o.pay)h+='<div class="oc-py">💳 '+o.pay+'</div>'
-      h+='</div><div class="oc-ac" onclick="event.stopPropagation()">'
-      h+='<button class="ca ca-wa" onclick="sendWa('+o.id+')">💬</button>'
-      h+='<button class="ca ca-lnk" onclick="cpLink('+o.id+')">🔗</button>'
-      h+='<button class="ca ca-ed">✏️</button>'
-      h+='<button class="ca ca-dl" onclick="delOff('+o.id+')">🗑</button>'
-      h+='</div></div></div></div>'
-    })
-  }else{
-    cont.className='ol'
-    filtered.forEach(function(o){
-      h+='<div class="lcard" onclick="openOff('+o.id+')">'
-      h+='<div class="or-th">'+o.emoji+'</div>'
-      h+='<div style="flex:1;min-width:0"><div class="or-nm">'+o.emoji+' '+o.deal+' '+o.type+' — '+o.city+'</div>'
-      h+='<div class="or-mt">'+o.code+' • '+(o.district||'—')+' • '+(o.area||'—')+'م²</div>'
-      h+='<div style="margin-top:2px;display:flex;gap:5px;align-items:center">'
-      h+='<span class="pl '+pc(o.status)+'">'+o.status+'</span>'
-      if(o.match.length)h+='<span style="font-size:8px;color:var(--bl)">👥 '+o.match.length+'</span>'
-      h+='</div></div>'
-      h+='<div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px" onclick="event.stopPropagation()">'
-      h+='<div class="or-pr">'+(o.price?o.price.toLocaleString('ar-SA')+' ر.س':'—')+'</div>'
-      h+='<div class="oc-ac">'
-      h+='<button class="ca ca-wa" onclick="sendWa('+o.id+')">💬</button>'
-      h+='<button class="ca ca-lnk" onclick="cpLink('+o.id+')">🔗</button>'
-      h+='<button class="ca ca-ed">✏️</button>'
-      h+='<button class="ca ca-dl" onclick="delOff('+o.id+')">🗑</button>'
-      h+='</div></div></div>'
-    })
-  }
+  cont.className='og'
+  filtered.forEach(function(o){
+    h+='<div class="ocard" onclick="openOff('+o.id+')">'
+    h+='<div class="oc-img"><span>'+o.emoji+'</span>'
+    h+='<span class="oc-st" style="background:'+sbg(o.status)+';color:'+stc(o.status)+'">'+o.status+'</span>'
+    h+='<span class="oc-dl">'+o.deal+'</span><span class="oc-cd">'+o.code+'</span>'
+    if(o.match&&o.match.length)h+='<span class="oc-m">👥 '+o.match.length+'</span>'
+    h+='</div><div class="oc-b">'
+    h+='<div class="oc-t">'+o.emoji+' '+o.type+' — '+o.city+'</div>'
+    h+='<div class="oc-loc">📍 '+(o.district||'—')+' • 👤 '+o.owner+'</div>'
+    h+='<div class="oc-ft"><div class="oc-pr">'+(o.price?o.price.toLocaleString('ar-SA')+' ر.س':'—')+'</div>'
+    h+='<div class="oc-ac" onclick="event.stopPropagation()">'
+    h+='<button class="ca ca-wa" onclick="sendWa('+o.id+')">💬</button>'
+    h+='<button class="ca ca-dl" onclick="delOff('+o.id+')">🗑</button>'
+    h+='</div></div></div></div>'
+  })
   cont.innerHTML=h
 }
+
 function applyF(){
-  var q=document.getElementById('srch').value.toLowerCase()
-  var cy=document.getElementById('fCity').value
-  var ty=document.getElementById('fType').value
-  var dl=document.getElementById('fDeal').value
-  filtered=offers.filter(function(o){
-    var txt=[o.code,o.type,o.deal,o.city,o.district,o.owner,o.status].join(' ').toLowerCase()
-    return(!q||txt.includes(q))&&(!cy||o.city===cy)&&(!ty||o.type===ty)&&(!dl||o.deal===dl)&&(!stF||o.status.includes(stF))
-  })
+  var q=(document.getElementById('srch')?document.getElementById('srch').value:'').toLowerCase()
+  filtered=q?offers.filter(function(o){return [o.code,o.type,o.deal,o.city,o.status].join(' ').toLowerCase().includes(q)}):offers.slice()
   renderOffers()
 }
-function fSt(s){stF=s;document.querySelectorAll('.qs').forEach(function(q){q.classList.remove('on')});applyF()}
-function resetF(){stF='';['srch','fCity','fType','fDeal'].forEach(function(id){var e=document.getElementById(id);if(e)e.value=''});filtered=offers.slice();renderOffers()}
-function setV(v){vMode=v;document.getElementById('vG').classList.toggle('on',v==='grid');document.getElementById('vL').classList.toggle('on',v==='list');renderOffers()}
-function cpLink(id){var o=offers.find(function(x){return x.id===id});navigator.clipboard.writeText('https://mergab-realestate.vercel.app/offer/'+o.code).then(function(){showToast('✅ تم نسخ الرابط!')})}
+function fSt(s){stF=s;filtered=s?offers.filter(function(o){return o.status.includes(s)}):offers.slice();renderOffers()}
+function resetF(){filtered=offers.slice();var e=document.getElementById('srch');if(e)e.value='';renderOffers()}
+function setV(v){vMode=v;renderOffers()}
+function cpLink(id){var o=offers.find(function(x){return x.id===id});if(o)navigator.clipboard.writeText('https://project-shnxm.vercel.app').then(function(){showToast('✅ تم نسخ الرابط!')})}
 function delOff(id){if(confirm('حذف هذا العرض؟'))showToast('🗑 تم الحذف','e')}
 function sendWa(id){var o=offers.find(function(x){return x.id===id});if(!o)return;window.open('https://wa.me/966'+o.phone.slice(1)+'?text='+encodeURIComponent(buildMsg(o)),'_blank')}
 
-var currentMsg=''
 function openOff(id){
   var o=offers.find(function(x){return x.id===id});if(!o)return
   document.getElementById('modT').textContent=o.emoji+' '+o.deal+' '+o.type+' — '+o.city
   var msg=buildMsg(o);currentMsg=msg
   var wl='https://wa.me/966'+o.phone.slice(1)+'?text='+encodeURIComponent(msg)
-  var waHtml=msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>').replace(/\*(.*?)\*/g,'<b>$1</b>')
-  var h='<div class="ph-row"><div class="ph-f">'+o.emoji+'</div><div class="ph-f" style="opacity:.2">📷</div><div class="ph-f" style="opacity:.1">📷</div></div>'
-  h+='<div class="p-hero">'+(o.price?o.price.toLocaleString('ar-SA')+' ر.س':'—')+' <small style="font-size:10px;color:var(--sub);font-weight:400">'+o.deal+(o.pay?' • '+o.pay:'')+'</small></div>'
+  var h='<div class="p-hero">'+(o.price?o.price.toLocaleString('ar-SA')+' ر.س':'—')+'</div>'
   h+='<div class="dg">'
   h+='<div class="di"><label>📍 الموقع</label><span>'+o.city+' — '+(o.district||'—')+'</span></div>'
   h+='<div class="di"><label>🏗 النوع</label><span>'+o.type+'</span></div>'
-  h+='<div class="di"><label>🪜 الدور</label><span>'+(o.floor||'—')+'</span></div>'
   h+='<div class="di"><label>🛏 الغرف</label><span>'+(o.rooms||'—')+'</span></div>'
-  h+='<div class="di"><label>🚿 الحمامات</label><span>'+(o.baths||'—')+'</span></div>'
   h+='<div class="di"><label>📐 المساحة</label><span>'+(o.area?o.area+' م²':'—')+'</span></div>'
-  h+='<div class="di"><label>🧭 الاتجاه</label><span>'+(o.dir||'—')+'</span></div>'
-  h+='<div class="di"><label>🛋️ التجهيزات</label><span>'+(o.furn||'—')+'</span></div>'
-  h+='<div class="di"><label>🤝 العمولة</label><span>'+(o.comm?o.comm.toLocaleString('ar-SA')+' ر.س':'—')+'</span></div>'
+  h+='<div class="di"><label>💰 السعر</label><span>'+(o.price?o.price.toLocaleString('ar-SA')+' ر.س':'—')+'</span></div>'
   h+='<div class="di"><label>👤 المالك</label><span>'+o.owner+'</span></div></div>'
-  if(o.details)h+='<div style="background:var(--s2);border-radius:8px;padding:9px;font-size:10px;color:var(--sub);margin-bottom:11px;line-height:1.8;border:1px solid var(--border)">✨ '+o.details+'</div>'
-  if(o.match.length){
-    h+='<div class="cm-bx"><h4>👥 عملاء مهتمون ('+o.match.length+')</h4>'
-    o.match.forEach(function(c){h+='<div class="cm-c"><div class="cm-av">👤</div><div style="flex:1;font-size:10px;font-weight:600">'+c+'</div><a href="https://wa.me/" target="_blank" style="font-size:9px;background:#25d366;color:#fff;padding:3px 8px;border-radius:5px;text-decoration:none;font-weight:700">💬</a></div>'})
-    h+='</div>'
-  }
-  h+='<div class="wa-bx"><h4>💬 الإعلان الجاهز للواتساب</h4><div class="wa-msg">'+waHtml+'</div></div>'
-  h+='<div style="display:flex;gap:7px;flex-wrap:wrap">'
+  if(o.details)h+='<div style="background:var(--s2);border-radius:8px;padding:9px;font-size:10px;color:var(--sub);margin:10px 0;border:1px solid var(--border)">✨ '+o.details+'</div>'
+  h+='<div style="display:flex;gap:7px;margin-top:10px">'
   h+='<a href="'+wl+'" target="_blank" class="btn bwa" style="flex:1;justify-content:center;padding:10px;text-decoration:none">📲 واتساب</a>'
   h+='<button class="btn bo" style="flex:1;justify-content:center;padding:10px" onclick="navigator.clipboard.writeText(currentMsg).then(function(){showToast(\'✅ تم النسخ!\')})">📋 نسخ</button>'
-  h+='<button class="btn bo bsm" style="padding:10px" onclick="cpLink('+o.id+')">🔗</button>'
   h+='</div>'
   document.getElementById('modB').innerHTML=h
   document.getElementById('offMod').classList.add('on')
@@ -1350,165 +1142,162 @@ function renderOwners(){
   var h=''
   owners.forEach(function(o){
     var ph=o.phone.replace(/[^0-9]/g,''),iph=ph.startsWith('0')?'966'+ph.slice(1):ph
-    h+='<div class="cr"><div class="cav">👤</div><div style="flex:1"><div class="cn">'+o.name+'</div><div class="cm">📱 '+o.phone+' • 🏙️ '+o.city+' • '+o.cnt+' عروض</div></div>'
-    h+='<div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">'
-    h+='<span style="background:var(--gbg);color:var(--g);padding:1px 7px;border-radius:20px;font-size:8px;font-weight:700;border:1px solid rgba(184,144,42,.18)">'+o.code+'</span>'
-    h+='<a href="https://wa.me/'+iph+'" target="_blank" class="btn bwa bsm">💬 واتساب</a>'
-    h+='</div></div>'
+    h+='<div class="cr"><div class="cav">👤</div><div style="flex:1"><div class="cn">'+o.name+'</div><div class="cm">📱 '+o.phone+' • '+o.city+'</div></div>'
+    h+='<a href="https://wa.me/'+iph+'" target="_blank" class="btn bwa bsm">💬</a></div>'
   })
-  document.getElementById('ownersList').innerHTML=h
+  if(!owners.length)h='<div style="text-align:center;padding:40px;color:var(--sub)">لا يوجد مالكون بعد</div>'
+  var el=document.getElementById('ownersList');if(el)el.innerHTML=h
 }
 
-function fCl(f){var sel=document.getElementById('clFil');if(sel){sel.value=f==='closed'?'':f;sel.dataset.closed=f==='closed'?'1':''}renderCl()}
+function fCl(f){renderCl()}
 function renderCl(){
-  var q=(document.getElementById('clSrch')?document.getElementById('clSrch').value:'').toLowerCase()
-  var fil=document.getElementById('clFil'),f=fil?fil.value:'',showClosed=fil&&fil.dataset.closed==='1'
-  var list=clients.slice()
-  if(showClosed)list=list.filter(function(c){return c.closed})
-  else if(f)list=list.filter(function(c){return c.req===f})
-  if(q)list=list.filter(function(c){return [c.name,c.city,c.phone,c.req,c.type].join(' ').toLowerCase().includes(q)})
   var cont=document.getElementById('clientsCont')
-  if(!list.length){cont.innerHTML='<div style="text-align:center;padding:40px;color:var(--sub)">👥 لا يوجد عملاء</div>';return}
+  if(!clients.length){cont.innerHTML='<div style="text-align:center;padding:40px;color:var(--sub)">لا يوجد عملاء بعد</div>';return}
   var h=''
-  list.forEach(function(c){
-    var matched=offers.filter(function(o){return o.city===c.city&&o.type===c.type&&o.deal===c.req&&o.price>=c.bF&&o.price<=c.bT&&o.status.includes('متاح')})
+  clients.forEach(function(c){
     var ph=c.phone.replace(/[^0-9]/g,''),iph=ph.startsWith('0')?'966'+ph.slice(1):ph
-    var rc=RC[c.req]||'#666'
-    h+='<div class="cl-card"><div style="display:flex;align-items:flex-start;gap:9px"><div class="cav">👤</div><div style="flex:1;min-width:0">'
-    h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:5px;margin-bottom:5px">'
-    h+='<div><div class="cn">'+c.name+(c.closed?' <span style="font-size:8px;color:var(--pu)">• مغلق ✅</span>':'')+'</div><div class="cm">📱 '+c.phone+' • 🏙️ '+c.city+'</div></div>'
-    h+='<span style="font-size:8px;padding:2px 8px;border-radius:20px;font-weight:700;background:'+rc+'22;color:'+rc+';border:1px solid '+rc+'44">'+c.req+' '+c.type+'</span></div>'
-    h+='<div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">'
-    h+='<div style="background:var(--s2);border-radius:6px;padding:5px 9px;font-size:9px;border:1px solid var(--border)"><span style="color:var(--sub)">الميزانية: </span><span style="font-weight:700;color:var(--g)">'+Number(c.bF).toLocaleString('ar-SA')+' — '+Number(c.bT).toLocaleString('ar-SA')+' ر.س</span></div>'
-    if(c.offer)h+='<div style="background:var(--gbg);border:1px solid rgba(184,144,42,.18);border-radius:6px;padding:5px 9px;font-size:9px;color:var(--g)">🎯 '+c.offer+'</div>'
-    h+='</div>'
-    if(matched.length){
-      h+='<div style="background:var(--gnbg);border:1px solid rgba(21,128,61,.14);border-radius:8px;padding:9px;margin-bottom:8px">'
-      h+='<div style="font-size:9px;color:var(--gn);font-weight:700;margin-bottom:6px">✅ '+matched.length+' عرض متاح يناسبه</div>'
-      matched.slice(0,2).forEach(function(o){
-        h+='<div style="display:flex;justify-content:space-between;align-items:center;background:var(--s1);border-radius:6px;padding:6px 9px;margin-bottom:4px;border:1px solid var(--border)">'
-        h+='<div style="font-size:10px;font-weight:600">'+o.emoji+' '+o.type+' — '+(o.district||o.city)+'</div>'
-        h+='<div style="display:flex;gap:5px;align-items:center"><span style="font-size:9px;font-weight:700;color:var(--g)">'+o.price.toLocaleString('ar-SA')+' ر.س</span>'
-        h+='<button onclick="sendOfferWa(\''+iph+'\','+o.id+')" style="background:#25d366;color:#fff;border:none;border-radius:5px;padding:3px 8px;font-size:9px;font-weight:700;cursor:pointer">💬</button></div></div>'
-      })
-      h+='</div>'
-    }else{h+='<div style="background:var(--rdbg);border:1px solid rgba(220,38,38,.1);border-radius:7px;padding:7px 9px;font-size:9px;color:var(--sub);margin-bottom:8px">⚠️ لا توجد عروض متاحة تطابق متطلباته</div>'}
-    h+='<div style="display:flex;gap:5px;flex-wrap:wrap">'
-    h+='<a href="https://wa.me/'+iph+'" target="_blank" class="btn bwa bsm">💬 تواصل</a>'
-    if(matched.length)h+='<button onclick="openOff('+matched[0].id+')" class="btn bo bsm">👁️ عرض</button>'
-    if(!c.closed)h+='<button onclick="closeDeal(\''+c.code+'\')" class="btn bo bsm" style="color:var(--pu);border-color:var(--pu)">✅ أغلق</button>'
-    h+='</div></div></div></div>'
+    h+='<div class="cl-card"><div class="cav">👤</div><div style="flex:1"><div class="cn">'+c.name+'</div>'
+    h+='<div class="cm">📱 '+c.phone+' • '+c.city+'</div>'
+    h+='<div class="cm">'+c.req+' '+c.type+' • '+Number(c.bF).toLocaleString('ar-SA')+' — '+Number(c.bT).toLocaleString('ar-SA')+' ر.س</div></div>'
+    h+='<a href="https://wa.me/'+iph+'" target="_blank" class="btn bwa bsm">💬</a></div>'
   })
   cont.innerHTML=h
 }
-function sendOfferWa(ph,id){var o=offers.find(function(x){return x.id===id});if(!o)return;window.open('https://wa.me/'+ph+'?text='+encodeURIComponent(buildMsg(o)),'_blank');showToast('💬 تم فتح واتساب')}
-function closeDeal(code){if(!confirm('إغلاق صفقة هذا العميل؟'))return;var c=clients.find(function(x){return x.code===code});if(c){c.closed=true;renderCl();showToast('✅ تم إغلاق الصفقة')}}
+function sendOfferWa(){}
+function closeDeal(){}
 
 function renderReqs(){
+  var el=document.getElementById('reqList')
+  if(!reqs.length){el.innerHTML='<div style="text-align:center;padding:40px;color:var(--sub)">لا توجد طلبات بعد</div>';return}
   var h=''
   reqs.forEach(function(r){
     var rph=r.phone.replace(/[^0-9]/g,''),riph=rph.startsWith('0')?'966'+rph.slice(1):rph
-    h+='<div class="rcard" id="rc'+r.id+'"><div class="rcard-h"><div><div style="font-size:12px;font-weight:700">👤 '+r.name+'</div><div style="font-size:9px;color:var(--sub);margin-top:2px">📱 '+r.phone+' • '+r.city+'</div></div><span class="pl pl-ng">🔔 جديد</span></div>'
-    h+='<div class="rcard-b"><div style="font-size:16px;font-weight:900;color:var(--g);margin-bottom:8px">'+r.price.toLocaleString('ar-SA')+' ر.س</div>'
-    h+='<div class="rg"><div class="ri"><label>النوع</label><span>'+r.type+'</span></div><div class="ri"><label>الصفقة</label><span>'+r.deal+'</span></div><div class="ri"><label>📍 الموقع</label><span>'+r.city+' — '+r.district+'</span></div><div class="ri"><label>المساحة</label><span>'+r.area+' م²</span></div><div class="ri"><label>الغرف</label><span>'+(r.rooms||'—')+'</span></div><div class="ri"><label>الدور</label><span>'+r.floor+'</span></div></div>'
-    if(r.details)h+='<div style="background:var(--s2);border-radius:6px;padding:8px;font-size:10px;color:var(--sub);margin-bottom:9px;border:1px solid var(--border)">✨ '+r.details+'</div>'
-    h+='<div class="r-acts"><button class="btn bgr bsm" style="flex:1;justify-content:center" onclick="appR('+r.id+')">✅ قبول وإضافة للعروض</button><a href="https://wa.me/'+riph+'" target="_blank" class="btn bwa bsm">💬</a><button class="btn br bsm" style="flex:1;justify-content:center" onclick="rejR('+r.id+')">❌ رفض</button></div></div></div>'
+    h+='<div class="rcard" id="rc'+r.id+'"><div class="rcard-h"><div>'
+    h+='<div style="font-size:12px;font-weight:700">👤 '+r.name+'</div>'
+    h+='<div style="font-size:9px;color:var(--sub)">📱 '+r.phone+' • '+r.city+'</div></div>'
+    h+='<span class="pl pl-ng">🔔 جديد</span></div>'
+    h+='<div class="rcard-b">'
+    h+='<div style="font-size:14px;font-weight:900;color:var(--g);margin-bottom:8px">'+r.price.toLocaleString('ar-SA')+' ر.س</div>'
+    h+='<div class="rg"><div class="ri"><label>النوع</label><span>'+r.type+'</span></div>'
+    h+='<div class="ri"><label>الصفقة</label><span>'+r.deal+'</span></div>'
+    h+='<div class="ri"><label>المدينة</label><span>'+r.city+'</span></div></div>'
+    h+='<div class="r-acts">'
+    h+='<button class="btn bgr bsm" style="flex:1;justify-content:center" onclick="appR('+r.id+')">✅ قبول</button>'
+    h+='<a href="https://wa.me/'+riph+'" target="_blank" class="btn bwa bsm">💬</a>'
+    h+='<button class="btn br bsm" style="flex:1;justify-content:center" onclick="rejR('+r.id+')">❌ رفض</button>'
+    h+='</div></div></div>'
   })
-  document.getElementById('reqList').innerHTML=h
+  el.innerHTML=h
 }
-function appR(id){var c=document.getElementById('rc'+id);c.style.borderColor='rgba(21,128,61,.22)';c.style.opacity='.7';c.querySelector('.r-acts').innerHTML='<div style="text-align:center;color:var(--gn);font-weight:700;font-size:11px;padding:7px;width:100%">✅ تمت الإضافة في العروض!</div>';c.querySelector('.pl').textContent='✅ تمت الإضافة';c.querySelector('.pl').className='pl pl-av';showToast('✅ تمت الإضافة!')}
-function rejR(id){if(!confirm('رفض هذا الطلب؟'))return;var c=document.getElementById('rc'+id);c.style.opacity='.4';c.querySelector('.r-acts').innerHTML='<div style="text-align:center;color:var(--rd);font-weight:700;font-size:11px;padding:7px;width:100%">❌ تم الرفض</div>';showToast('تم الرفض','e')}
+function appR(id){var c=document.getElementById('rc'+id);if(c)c.style.opacity='.5';showToast('✅ تمت الإضافة!')}
+function rejR(id){if(!confirm('رفض هذا الطلب؟'))return;var c=document.getElementById('rc'+id);if(c)c.style.opacity='.4';showToast('تم الرفض','e')}
 
-var AD={type:'',deal:'',status:'متاح 🟢'},curSt=1,pCnt=0
 var fakeP=['🏡','🛋️','🚿','🌳','🏊','🌅','🛏️','🪟']
-function aStep(n){document.getElementById('af'+curSt).style.display='none';document.getElementById('af'+n).style.display='block';for(var i=1;i<=5;i++){var s=document.getElementById('as'+i),c=s.querySelector('.stc');if(i<n){s.className='step done';c.textContent='✓'}else if(i===n){s.className='step on'}else{s.className='step'}}document.getElementById('pfill').style.width=(n/5*100)+'%';if(n===5)fillRev();curSt=n;document.getElementById('pages').scrollTop=0}
+function aStep(n){
+  document.getElementById('af'+curSt).style.display='none'
+  document.getElementById('af'+n).style.display='block'
+  for(var i=1;i<=5;i++){var s=document.getElementById('as'+i);if(!s)continue;s.className=i<n?'step done':i===n?'step on':'step';s.querySelector('.stc').textContent=i<n?'✓':['👤','🏗','💰','📷','✅'][i-1]}
+  document.getElementById('pfill').style.width=(n/5*100)+'%'
+  if(n===5)fillRev()
+  curSt=n
+}
 function asel(btn,key,val){btn.closest('.cg').querySelectorAll('.cb').forEach(function(b){b.classList.remove('sel')});btn.classList.add('sel');AD[key]=val}
-function fillOwnF(){var sel=document.getElementById('af_own'),opt=sel.options[sel.selectedIndex];if(opt.value==='new'){document.getElementById('newOF').style.display='block';document.getElementById('af_ph').value=''}else if(opt.value){document.getElementById('newOF').style.display='none';document.getElementById('af_ph').value=(opt.dataset&&opt.dataset.p)?opt.dataset.p:''}}
+function fillOwnF(){var sel=document.getElementById('af_own'),opt=sel.options[sel.selectedIndex];document.getElementById('newOF').style.display=opt.value==='new'?'block':'none';if(opt.value&&opt.value!=='new'&&opt.dataset&&opt.dataset.p)document.getElementById('af_ph').value=opt.dataset.p}
 function calcC(){var p=Number(document.getElementById('af_pr').value)||0,ac=document.getElementById('cAC');if(p>0){document.getElementById('cV').textContent=Math.round(p*.025).toLocaleString('ar-SA')+' ر.س';ac.style.display='flex'}else ac.style.display='none'}
-function fakeUp(){if(pCnt>=10)return;var c=document.getElementById('imgPv'),d=document.createElement('div');d.style.cssText='width:56px;height:56px;border-radius:7px;background:var(--s2);border:2px solid var(--g);display:flex;align-items:center;justify-content:center;font-size:20px;position:relative';d.innerHTML=fakeP[pCnt%8]+'<button onclick="this.parentElement.remove();pCnt--" style="position:absolute;top:-5px;left:-5px;background:var(--rd);border:none;color:#fff;width:15px;height:15px;border-radius:50%;font-size:9px;cursor:pointer">×</button>';c.appendChild(d);pCnt++;showToast('☁️ رُفعت على Supabase')}
-function fillRev(){var sel=document.getElementById('af_own'),opt=sel.options[sel.selectedIndex];document.getElementById('rv_o').textContent=opt.value==='new'?document.getElementById('af_nn').value||'—':(opt.dataset&&opt.dataset.n?opt.dataset.n:'—');document.getElementById('rv_p').textContent=document.getElementById('af_ph').value||'—';document.getElementById('rv_ty').textContent=AD.type||'—';document.getElementById('rv_dl').textContent=AD.deal||'—';var city=document.getElementById('af_city').value,dist=document.getElementById('af_dist').value;document.getElementById('rv_lo').textContent=[city,dist].filter(Boolean).join(' — ')||'—';var rooms=document.getElementById('af_rm').value,baths=document.getElementById('af_bt').value,area=document.getElementById('af_ar').value,floor=document.getElementById('af_fl').value;document.getElementById('rv_sp').textContent=[floor?'دور '+floor:'',rooms?rooms+' غرف':'',baths?baths+' حمامات':'',area?area+' م²':''].filter(Boolean).join(' • ')||'—';var price=Number(document.getElementById('af_pr').value)||0;document.getElementById('rv_pr').textContent=price?price.toLocaleString('ar-SA')+' ر.س':'—';document.getElementById('rv_st').textContent=AD.status}
-function saveOffer(){
-  // جمع البيانات
+function fakeUp(){if(pCnt>=10)return;var c=document.getElementById('imgPv'),d=document.createElement('div');d.style.cssText='width:56px;height:56px;border-radius:7px;background:var(--s2);border:2px solid var(--g);display:flex;align-items:center;justify-content:center;font-size:20px';d.textContent=fakeP[pCnt%8];c.appendChild(d);pCnt++;showToast('☁️ تم الرفع')}
+function fillRev(){
   var sel=document.getElementById('af_own'),opt=sel.options[sel.selectedIndex]
-  var ownerName=opt.value==='new'?document.getElementById('af_nn').value:(opt.dataset&&opt.dataset.n?opt.dataset.n:'')
-  var newOffer={
-    code:'E-00'+(offers.length+1),
-    type:AD.type,
-    deal:AD.deal,
-    city:document.getElementById('af_city').value,
-    district:document.getElementById('af_dist').value,
-    floor:document.getElementById('af_fl').value,
-    rooms:Number(document.getElementById('af_rm').value)||0,
-    baths:Number(document.getElementById('af_bt').value)||0,
-    area:Number(document.getElementById('af_ar').value)||0,
-    price:Number(document.getElementById('af_pr').value)||0,
-    pay:document.getElementById('af_pay').value||null,
-    status:AD.status,
-    details:document.getElementById('af_dt').value,
-    owner_name:ownerName,
-    owner_phone:document.getElementById('af_ph').value,
-    direction:document.getElementById('af_dr').value,
-    furnished:document.getElementById('af_fu').value
-  }
-  // حفظ محلي أولاً
-  offers.push({
-    id:offers.length+1,
-    code:newOffer.code,
-    type:newOffer.type,deal:newOffer.deal,
-    city:newOffer.city,district:newOffer.district,
-    floor:newOffer.floor,rooms:newOffer.rooms,baths:newOffer.baths,
-    area:newOffer.area,price:newOffer.price,comm:Math.round(newOffer.price*.025),
-    pay:newOffer.pay,status:newOffer.status,details:newOffer.details,
-    owner:ownerName,phone:newOffer.owner_phone,
-    emoji:newOffer.type==='فيلا'?'🏡':newOffer.type==='شقة'?'🏢':'🏠',
-    dir:newOffer.direction,furn:newOffer.furnished,match:[]
-  })
-  // حفظ في Supabase
-  saveOfferToDB(newOffer)
-  // إظهار شاشة النجاح
+  var rvO=document.getElementById('rv_o');if(rvO)rvO.textContent=opt.value==='new'?document.getElementById('af_nn').value||'—':(opt.dataset&&opt.dataset.n?opt.dataset.n:'—')
+  var rvTy=document.getElementById('rv_ty');if(rvTy)rvTy.textContent=AD.type||'—'
+  var rvDl=document.getElementById('rv_dl');if(rvDl)rvDl.textContent=AD.deal||'—'
+  var rvLo=document.getElementById('rv_lo');if(rvLo)rvLo.textContent=[document.getElementById('af_city').value,document.getElementById('af_dist').value].filter(Boolean).join(' — ')||'—'
+  var rvPr=document.getElementById('rv_pr');if(rvPr)rvPr.textContent=(Number(document.getElementById('af_pr').value)||0).toLocaleString('ar-SA')+' ر.س'
+  var rvSt=document.getElementById('rv_st');if(rvSt)rvSt.textContent=AD.status
+}
+function saveOffer(){
+  var sel=document.getElementById('af_own'),opt=sel.options[sel.selectedIndex]
+  var data={type:AD.type,deal:AD.deal,status:AD.status,city:document.getElementById('af_city').value,district:document.getElementById('af_dist').value,floor:document.getElementById('af_fl').value,rooms:Number(document.getElementById('af_rm').value)||0,baths:Number(document.getElementById('af_bt').value)||0,area:Number(document.getElementById('af_ar').value)||0,price:Number(document.getElementById('af_pr').value)||0,owner_name:opt.value==='new'?document.getElementById('af_nn').value:'',owner_phone:document.getElementById('af_ph').value,emoji:'🏠',comm:Math.round((Number(document.getElementById('af_pr').value)||0)*.025)}
+  saveOfferSB(data)
   document.querySelectorAll('[id^="af"]').forEach(function(e){e.style.display='none'})
   document.getElementById('stepsWrap').style.display='none'
-  var d=document.getElementById('addDone')
-  d.style.display='block'
-  d.classList.add('on')
-  document.getElementById('addDone').querySelector('.done-code').textContent=newOffer.code
-  document.getElementById('pages').scrollTop=0
+  var d=document.getElementById('addDone');d.style.display='block';d.classList.add('on')
 }
-function resetAdd(){pCnt=0;curSt=1;AD.type='';AD.deal='';AD.status='متاح 🟢';document.getElementById('stepsWrap').style.display='block';var d=document.getElementById('addDone');d.classList.remove('on');d.style.display='none';for(var i=1;i<=5;i++){document.getElementById('af'+i).style.display=i===1?'block':'none'}for(var i=1;i<=5;i++){var s=document.getElementById('as'+i);s.className=i===1?'step on':'step';s.querySelector('.stc').textContent=['👤','🏗','💰','📷','✅'][i-1]}document.getElementById('pfill').style.width='20%';document.getElementById('imgPv').innerHTML='';document.getElementById('af_own').value='';document.getElementById('af_ph').value='';document.getElementById('newOF').style.display='none';document.querySelectorAll('.cb').forEach(function(b){b.classList.remove('sel')});document.getElementById('cAC').style.display='none'}
+function resetAdd(){
+  pCnt=0;curSt=1;AD={type:'',deal:'',status:'متاح 🟢'}
+  document.getElementById('stepsWrap').style.display='block'
+  var d=document.getElementById('addDone');d.classList.remove('on');d.style.display='none'
+  for(var i=1;i<=5;i++){document.getElementById('af'+i).style.display=i===1?'block':'none'}
+  for(var i=1;i<=5;i++){var s=document.getElementById('as'+i);if(!s)continue;s.className=i===1?'step on':'step';s.querySelector('.stc').textContent=['👤','🏗','💰','📷','✅'][i-1]}
+  document.getElementById('pfill').style.width='20%'
+  document.getElementById('imgPv').innerHTML=''
+  document.querySelectorAll('.cb').forEach(function(b){b.classList.remove('sel')})
+  var ac=document.getElementById('cAC');if(ac)ac.style.display='none'
+}
 
 function openQA(){goPage('addOffer')}
-function closeQA(){var ov=document.getElementById('qaOv');if(ov)ov.classList.remove('on')}
+function closeQA(){}
 
 function buildMsg(o){
   var nl='\n',sep='━━━━━━━━━━━━━━━━━━'
-  var de={'بيع':'💰','إيجار':'🔑','إستثمار':'📈'}
-  var te={'فيلا':'🏡','شقة':'🏢','مستودع':'🏭','محلات':'🏪','استوديو':'🛋️','أرض':'🌍'}
-  var m=(te[o.type]||'🏠')+' *'+o.deal+' '+o.type+'*'+nl+sep+nl
+  var m='🏠 *'+o.deal+' '+o.type+'*'+nl+sep+nl
   m+='📍 *الموقع:* '+o.city+(o.district?' - '+o.district:'')+nl
   if(o.area)m+='📐 *المساحة:* '+o.area+' م²'+nl
-  if(o.floor)m+='🪜 *الدور:* '+o.floor+nl
-  if(o.rooms)m+='🛏 *الغرف:* '+o.rooms+' غرف'+nl
+  if(o.rooms)m+='🛏 *الغرف:* '+o.rooms+nl
   if(o.baths)m+='🚿 *الحمامات:* '+o.baths+nl
-  if(o.dir)m+='🧭 *الاتجاه:* '+o.dir+nl
-  if(o.furn)m+='🛋️ *التجهيزات:* '+o.furn+nl
   m+=sep+nl
-  if(o.price)m+=(de[o.deal]||'💵')+' *السعر:* '+o.price.toLocaleString('ar-SA')+' ر.س'+nl
-  if(o.pay)m+='💳 *طريقة الدفع:* '+o.pay+nl
-  if(o.comm)m+='🤝 *العمولة:* '+o.comm.toLocaleString('ar-SA')+' ر.س'+nl
-  if(o.details)m+=nl+'✨ *المميزات:*'+nl+o.details+nl
+  if(o.price)m+='💰 *السعر:* '+o.price.toLocaleString('ar-SA')+' ر.س'+nl
+  if(o.details)m+=nl+'✨ '+o.details+nl
   m+=sep+nl+'📞 *للاستفسار تواصل معنا*'+nl+'🏢 المرقاب الذهبي للعقارات'
   return m
 }
 
-function showS(id,el){document.querySelectorAll('.ssec').forEach(function(s){s.classList.remove('on')});document.getElementById('ss-'+id).classList.add('on');document.querySelectorAll('.sni').forEach(function(n){n.classList.remove('on')});el.classList.add('on')}
-function updUser(){var n=document.getElementById('s_d').value;document.getElementById('tbName').textContent=n||'المدير';document.getElementById('tbAv').textContent=(n||'م')[0];document.getElementById('sbAv').textContent=(n||'م')[0]}
-function updComp(){var ar=document.getElementById('s_cAr').value;document.getElementById('tbName').textContent=ar||'المدير'}
+function showS(id,el){
+  document.querySelectorAll('.ssec').forEach(function(s){s.style.display='none'})
+  var sec=document.getElementById('ss-'+id)
+  if(sec)sec.style.display='block'
+  document.querySelectorAll('.sni').forEach(function(n){n.classList.remove('on')})
+  if(el)el.classList.add('on')
+}
+function updUser(){var n=document.getElementById('s_d').value;var tn=document.getElementById('tbName');if(tn)tn.textContent=n||'المدير'}
+function updComp(){}
 function setCol(c,c2,el){document.querySelectorAll('.co').forEach(function(o){o.classList.remove('on')});el.classList.add('on');document.documentElement.style.setProperty('--g',c);document.documentElement.style.setProperty('--g2',c2);showToast('✅ تم تطبيق اللون')}
-function setEmoji(e){document.getElementById('sbGem').textContent=e;showToast('✅ تم تغيير الرمز')}
-function toggleTheme(){var isDark=document.getElementById('thTgl').checked;if(isDark){document.documentElement.setAttribute('data-dark','')}else{document.documentElement.removeAttribute('data-dark')}document.getElementById('thLbl').textContent=isDark?'داكن 🌙':'فاتح ☀️';showToast(isDark?'🌙 الوضع الداكن':'☀️ الوضع الفاتح')}
-function chkStr(){var p=document.getElementById('s_np').value,bar=document.getElementById('strB'),txt=document.getElementById('strT');if(!p){bar.style.cssText='height:2px;border-radius:1px;background:var(--border)';txt.textContent='أدخل كلمة مرور';txt.style.color='var(--sub)';return}var sc=0;if(p.length>=8)sc++;if(/[A-Z]/.test(p))sc++;if(/[0-9]/.test(p))sc++;if(/[^A-Za-z0-9]/.test(p))sc++;var lv=[{b:'var(--rd)',t:'ضعيفة جداً'},{b:'var(--rd)',t:'ضعيفة'},{b:'#f97316',t:'متوسطة'},{b:'var(--gn)',t:'قوية ✅'}][Math.min(sc,3)];bar.style.background=lv.b;bar.style.width=(sc/4*100)+'%';txt.textContent=lv.t;txt.style.color=lv.b}
-function chgPass(){var op=document.getElementById('s_op').value,np=document.getElementById('s_np').value,cp=document.getElementById('s_cp').value;if(!op)return showToast('أدخل كلمة المرور الحالية','e');if(!np)return showToast('أدخل كلمة المرور الجديدة','e');if(np!==cp)return showToast('كلمتا المرور غير متطابقتين','e');if(op!==CREDS.p)return showToast('كلمة المرور الحالية خاطئة','e');CREDS.p=np;showToast('✅ تم تغيير كلمة المرور');document.getElementById('s_op').value='';document.getElementById('s_np').value='';document.getElementById('s_cp').value=''}
-function showToast(msg,t){var el=document.getElementById('toast');el.textContent=msg;el.style.background=(t==='e')?'var(--rd)':'var(--gn)';el.classList.add('on');setTimeout(function(){el.classList.remove('on')},2800)}
+function setEmoji(e){var sg=document.getElementById('sbGem');if(sg)sg.textContent=e}
+function toggleTheme(){var d=document.getElementById('thTgl');if(!d)return;if(d.checked){document.documentElement.setAttribute('data-dark','')}else{document.documentElement.removeAttribute('data-dark')};var tl=document.getElementById('thLbl');if(tl)tl.textContent=d.checked?'داكن 🌙':'فاتح ☀️';showToast(d.checked?'🌙 الوضع الداكن':'☀️ الوضع الفاتح')}
+function chkStr(){var p=document.getElementById('s_np');if(!p||!p.value)return;var sc=0;if(p.value.length>=8)sc++;if(/[A-Z]/.test(p.value))sc++;if(/[0-9]/.test(p.value))sc++;if(/[^A-Za-z0-9]/.test(p.value))sc++;var lv=[{b:'var(--rd)',t:'ضعيفة'},{b:'var(--rd)',t:'ضعيفة'},{b:'#f97316',t:'متوسطة'},{b:'var(--gn)',t:'قوية ✅'}][Math.min(sc,3)];var sb=document.getElementById('strB');var st=document.getElementById('strT');if(sb){sb.style.background=lv.b;sb.style.width=(sc/4*100)+'%'}if(st){st.textContent=lv.t;st.style.color=lv.b}}
+function chgPass(){var op=document.getElementById('s_op'),np=document.getElementById('s_np'),cp=document.getElementById('s_cp');if(!op||!np||!cp)return;if(op.value!==CREDS.p)return showToast('كلمة المرور الحالية خاطئة','e');if(np.value!==cp.value)return showToast('كلمتا المرور غير متطابقتين','e');CREDS.p=np.value;showToast('✅ تم تغيير كلمة المرور');op.value='';np.value='';cp.value=''}
+function reqNotif(){try{if('Notification' in window)Notification.requestPermission()}catch(e){}}
+function sendNotif(t,b){try{if(Notification.permission==='granted')new Notification(t,{body:b})}catch(e){}}
+
+function cpOwnerLink(){navigator.clipboard.writeText('https://project-shnxm.vercel.app?owner=1').then(function(){showToast('✅ تم نسخ الرابط!')})}
+function calcOwnerComm(){var p=Number(document.getElementById('of_pr').value)||0;var box=document.getElementById('of_comm_box');if(p>0){var ov=document.getElementById('of_comm_val');if(ov)ov.textContent=Math.round(p*.025).toLocaleString('ar-SA')+' ر.س';if(box)box.style.display='flex'}else if(box)box.style.display='none'}
+function submitOwnerForm(){
+  var name=document.getElementById('of_name'),phone=document.getElementById('of_phone')
+  if(!name||!phone||!name.value||!phone.value){showToast('يرجى ملء الاسم والجوال','e');return}
+  var data={owner_name:name.value,owner_phone:phone.value,property_type:document.getElementById('of_type')?document.getElementById('of_type').value:'',deal_type:document.getElementById('of_deal')?document.getElementById('of_deal').value:'',city:document.getElementById('of_city')?document.getElementById('of_city').value:'',district:document.getElementById('of_dist')?document.getElementById('of_dist').value:'',rooms:Number(document.getElementById('of_rm')?document.getElementById('of_rm').value:0)||0,area:Number(document.getElementById('of_ar')?document.getElementById('of_ar').value:0)||0,price:Number(document.getElementById('of_pr')?document.getElementById('of_pr').value:0)||0,details:document.getElementById('of_dt')?document.getElementById('of_dt').value:''}
+  saveRequestSB(data)
+  showToast('✅ تم إرسال الطلب!')
+  name.value='';phone.value=''
+}
+
+function getSB(){try{if(window._sbcl)return window._sbcl;if(window.supabase&&window.supabase.createClient){window._sbcl=window.supabase.createClient('https://ontnilzksopzrlkflxnc.supabase.co','sb_publishable_CX8aZRJci63Rr0KB6UaRJQ_GgSQBsWE');return window._sbcl}}catch(e){}return null}
+
+async function loadOffers(){var sb=getSB();if(!sb)return;try{var r=await sb.from('offers').select('*').order('created_at',{ascending:false});if(r.error||!r.data||!r.data.length)return;offers.splice(0);r.data.forEach(function(o){offers.push({id:o.id,code:o.code||'E-'+o.id,type:o.type||'',deal:o.deal||'',city:o.city||'',district:o.district||'',floor:o.floor||'',rooms:o.rooms||0,baths:o.baths||0,area:o.area||0,price:o.price||0,comm:o.comm||0,pay:o.pay||null,status:o.status||'متاح 🟢',details:o.details||'',owner:o.owner_name||'',phone:o.owner_phone||'05',emoji:o.emoji||'🏠',dir:o.dir||'',furn:o.furn||'',match:[]})});filtered=offers.slice()}catch(e){console.log('loadOffers:',e)}}
+async function loadOwners(){var sb=getSB();if(!sb)return;try{var r=await sb.from('owners').select('*');if(r.error||!r.data)return;owners.splice(0);r.data.forEach(function(o){owners.push({code:o.code||'',name:o.name||'',phone:o.phone||'',city:o.city||'',cnt:o.offers_count||0})})}catch(e){}}
+async function loadClients(){var sb=getSB();if(!sb)return;try{var r=await sb.from('clients').select('*');if(r.error||!r.data)return;clients.splice(0);r.data.forEach(function(c){clients.push({code:c.code||'',name:c.name||'',phone:c.phone||'',city:c.city||'',req:c.request_type||'',type:c.property_type||'',bF:c.budget_from||0,bT:c.budget_to||0,offer:c.matched_offer||'',closed:c.is_closed||false})})}catch(e){}}
+async function loadRequests(){var sb=getSB();if(!sb)return;try{var r=await sb.from('owner_requests').select('*').order('created_at',{ascending:false});if(r.error||!r.data)return;reqs.splice(0);r.data.forEach(function(r2){reqs.push({id:r2.id,name:r2.owner_name||'',phone:r2.owner_phone||'',city:r2.city||'',type:r2.property_type||'',deal:r2.deal_type||'',district:r2.district||'',floor:r2.floor||'',rooms:r2.rooms||0,area:r2.area||0,price:r2.price||0,details:r2.details||''})})}catch(e){}}
+async function saveOfferSB(data){var sb=getSB();if(!sb){showToast('سيتم الحفظ محلياً','e');return};try{var r=await sb.from('offers').insert([data]);if(r.error)throw r.error;showToast('✅ تم الحفظ!');await loadOffers();renderOv()}catch(e){showToast('خطأ في الحفظ','e')}}
+async function saveRequestSB(data){var sb=getSB();if(!sb)return;try{await sb.from('owner_requests').insert([data])}catch(e){console.log(e)}}
+async function loadAll(){try{await Promise.all([loadOffers(),loadOwners(),loadClients(),loadRequests()]);renderOv();filtered=offers.slice()}catch(e){console.log('loadAll:',e)}}
+
+if(window.location.search.includes('owner=1')){
+  window.addEventListener('load',function(){
+    document.getElementById('scr-login').style.display='none'
+    document.getElementById('scr-main').style.display='flex'
+    initMain()
+    setTimeout(function(){goPage('ownerForm')},300)
+  })
+}
+
 </script>
 </body>
 </html>
