@@ -130,7 +130,8 @@ async function submitForm(){
     rooms:Number(document.getElementById('of_rm').value)||0,
     area:Number(document.getElementById('of_ar').value)||0,
     price:Number(document.getElementById('of_pr').value)||0,
-    details:document.getElementById('of_dt').value||null
+    details:document.getElementById('of_dt').value||null,
+    floor:null
   }
 
   try{
@@ -148,9 +149,10 @@ async function submitForm(){
       document.getElementById('formArea').style.display='none'
       document.getElementById('successBox').style.display='block'
     }else{
-      var err=await res.text()
-      console.log('Error:',err)
-      showToast('حدث خطأ: '+res.status,'e')
+      var err=await res.json().catch(function(){return{}})
+      var msg=err.message||err.hint||('خطأ '+res.status)
+      console.log('Supabase error:',err)
+      showToast(msg,'e')
       btn.textContent='📤 إرسال الطلب'
       btn.disabled=false
     }
