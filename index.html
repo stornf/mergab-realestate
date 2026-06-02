@@ -1292,7 +1292,21 @@ function cpLink(id){
   if(!o)return
   navigator.clipboard.writeText('https://project-shnxm.vercel.app/offer/'+o.code).then(function(){showToast('✅ تم نسخ الرابط!')})
 }
-function delOffer(id){if(confirm('حذف هذا العرض؟'))showToast('🗑 تم الحذف','e')}
+async function delOffer(id){
+  if(!confirm('حذف هذا العرض نهائياً؟'))return
+  var sb=getSB()
+  if(sb){
+    try{
+      var r=await sb.from('offers').delete().eq('id',id)
+      if(r.error)throw r.error
+    }catch(e){console.log('delete:',e)}
+  }
+  offers=offers.filter(function(o){return o.id!==id})
+  filtered=filtered.filter(function(o){return o.id!==id})
+  showToast('🗑 تم الحذف')
+  renderOffers()
+  renderOv()
+}
 function sendWa(id){
   var o=offers.find(function(x){return x.id===id});if(!o)return
   window.open('https://wa.me/966'+o.phone.slice(1)+'?text='+encodeURIComponent(buildMsg(o)),'_blank')
@@ -1410,8 +1424,41 @@ function renderRequests(){
   if(!reqs.length)h='<div style="text-align:center;padding:40px;color:var(--muted)">لا توجد طلبات بعد</div>'
   var el=document.getElementById('reqList');if(el)el.innerHTML=h
 }
-function approveReq(id){showToast('✅ تمت الإضافة!');var c=document.getElementById('rc'+id);if(c)c.style.opacity='.5'}
-function rejectReq(id){if(!confirm('رفض هذا الطلب؟'))return;var c=document.getElementById('rc'+id);if(c)c.style.opacity='.4';showToast('تم الرفض','e')}
+async function approveReq(id){
+  var r=reqs.find(function(x){return x.id===id});if(!r)return
+  if(!confirm('قبول طلب '+r.name+' وإضافته للعروض؟'))return
+  var sb=getSB()
+  var newOffer={
+    type:r.type,deal:r.deal,city:r.city,district:r.district,
+    rooms:r.rooms,area:r.area,price:r.price,details:r.details,
+    owner_name:r.name,owner_phone:r.phone,
+    status:'متاح 🟢',emoji:'🏠',
+    code:'E-'+(offers.length+1).toString().padStart(3,'0')
+  }
+  if(sb){
+    try{
+      var res=await sb.from('offers').insert([newOffer])
+      if(res.error)throw res.error
+      await sb.from('owner_requests').delete().eq('id',id)
+    }catch(e){console.log('approve:',e)}
+  }
+  reqs=reqs.filter(function(x){return x.id!==id})
+  showToast('✅ تمت الإضافة للعروض!')
+  renderRequests()
+  await loadOffers()
+  renderOv()
+}
+async function rejectReq(id){
+  if(!confirm('رفض هذا الطلب نهائياً؟'))return
+  var sb=getSB()
+  if(sb){
+    try{await sb.from('owner_requests').delete().eq('id',id)}catch(e){}
+  }
+  reqs=reqs.filter(function(x){return x.id!==id})
+  showToast('تم الرفض','e')
+  renderRequests()
+  updateStats()
+}
 
 // ══ ADD OFFER ══
 function aStep(n){
