@@ -4,120 +4,94 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>المرقاب الذهبي — تسجيل عقار</title>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"Tajawal",sans-serif;direction:rtl;background:#f0efe8;color:#18181f;min-height:100vh;padding:20px}
-:root{--g:#B8902A;--g2:#9a7820;--gbg:rgba(184,144,42,.07);--gn:#15803d;--rd:#dc2626;--s1:#fff;--s2:#f7f6f1;--border:#e2e2d8;--sub:#90909a;--r:10px;--r2:14px}
-.wrap{max-width:540px;margin:0 auto}
-.logo{text-align:center;padding:30px 0 20px}
-.logo-icon{font-size:48px;display:block;margin-bottom:8px}
-.logo-name{font-size:20px;font-weight:900;color:var(--g)}
-.logo-sub{font-size:11px;color:var(--sub);margin-top:3px}
-.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r2);padding:16px;margin-bottom:12px}
-.card-t{font-size:13px;font-weight:700;color:var(--g);margin-bottom:14px}
-.ff{margin-bottom:12px}
-.ff label{display:block;font-size:11px;font-weight:700;color:var(--sub);margin-bottom:5px}
-.inp{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:var(--r);font-family:inherit;font-size:13px;background:var(--s1);color:#18181f;outline:none;transition:border-color .2s}
-.inp:focus{border-color:var(--g)}
+body{font-family:"Tajawal",sans-serif;direction:rtl;background:#f0efe8;color:#1a1a2e;min-height:100vh;padding:20px}
+:root{--gold:#B8902A;--gold2:#9a7820;--goldbg:rgba(184,144,42,.08);--goldborder:rgba(184,144,42,.2);--green:#16a34a;--red:#dc2626;--border:#e5e4dc;--card:#fff;--card2:#f7f6f1;--muted:#888;--r:10px;--r2:14px}
+.wrap{max-width:520px;margin:0 auto}
+.logo{text-align:center;padding:24px 0 18px}
+.logo-icon{font-size:44px;display:block;margin-bottom:8px}
+.logo-name{font-size:22px;font-weight:900;color:var(--gold)}
+.logo-en{font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:3px}
+.logo-line{width:40px;height:1.5px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:8px auto}
+.logo-tag{font-size:11px;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:16px;margin-bottom:12px;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.card-title{font-size:12px;font-weight:700;color:var(--gold);margin-bottom:13px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:5px}
+.inp{width:100%;padding:11px 13px;background:var(--card2);border:1.5px solid var(--border);border-radius:var(--r);font-family:inherit;font-size:13px;color:#1a1a2e;outline:none;transition:all .2s;text-align:right}
+.inp:focus{border-color:var(--gold);background:var(--card)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.btn-send{width:100%;padding:15px;background:var(--g);color:#000;border:none;border-radius:var(--r2);font-family:inherit;font-size:15px;font-weight:900;cursor:pointer;margin-top:4px;transition:opacity .2s}
-.btn-send:active{opacity:.85}
-.comm-box{background:var(--gbg);border:1px solid rgba(184,144,42,.18);border-radius:var(--r);padding:10px 13px;font-size:11px;margin-bottom:12px;display:none;justify-content:space-between;align-items:center}
-.comm-val{font-weight:900;color:var(--g)}
-.success{display:none;text-align:center;padding:40px 20px;background:var(--s1);border-radius:var(--r2);border:1px solid var(--border)}
-.success-icon{font-size:56px;margin-bottom:12px}
-.success-t{font-size:18px;font-weight:900;color:var(--gn);margin-bottom:8px}
-.success-s{font-size:12px;color:var(--sub);line-height:1.7}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--gn);color:#fff;padding:10px 20px;border-radius:25px;font-size:12px;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none;z-index:99;white-space:nowrap}
-.toast.on{opacity:1}
+.comm-box{display:none;align-items:center;justify-content:space-between;background:var(--goldbg);border:1px solid var(--goldborder);border-radius:var(--r);padding:10px 13px;margin-bottom:11px;font-size:12px}
+.comm-val{font-weight:900;color:var(--gold)}
+.submit-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#fff;border:none;border-radius:var(--r2);font-family:inherit;font-size:15px;font-weight:900;cursor:pointer;transition:all .2s;box-shadow:0 3px 12px rgba(184,144,42,.3)}
+.submit-btn:active{opacity:.9}
+.submit-btn:disabled{opacity:.6;cursor:not-allowed}
+.success{display:none;text-align:center;padding:50px 20px;background:var(--card);border-radius:var(--r2);border:1px solid var(--border)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);color:#fff;padding:10px 20px;border-radius:25px;font-size:12px;font-weight:700;opacity:0;pointer-events:none;z-index:99;white-space:nowrap;transition:all .3s}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(-4px)}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="logo">
     <span class="logo-icon">🏢</span>
-    <div class="logo-name">المرقاب الذهبي للعقارات</div>
-    <div class="logo-sub">AL-MERGAB AL-DHAHABI REAL ESTATE</div>
+    <div class="logo-name">المرقاب الذهبي</div>
+    <div class="logo-en">AL-MERGAB AL-DHAHABI REAL ESTATE</div>
+    <div class="logo-line"></div>
+    <div class="logo-tag">سجّل عقارك وسنتواصل معك</div>
   </div>
 
-  <div id="formWrap">
+  <div id="formArea">
     <div class="card">
-      <div class="card-t">👤 بيانات المالك</div>
-      <div class="ff"><label>الاسم الكامل *</label><input id="of_name" class="inp" placeholder="اسم المالك"></div>
-      <div class="ff"><label>📱 رقم الجوال *</label><input id="of_phone" class="inp" placeholder="05xxxxxxxx" type="tel"></div>
+      <div class="card-title">👤 بيانات المالك</div>
+      <div class="field"><label>الاسم الكامل *</label><input id="of_name" class="inp" placeholder="اسم المالك"></div>
+      <div class="field"><label>📱 رقم الجوال *</label><input id="of_phone" class="inp" placeholder="05xxxxxxxx" type="tel"></div>
     </div>
-
     <div class="card">
-      <div class="card-t">🏗 تفاصيل العقار</div>
-      <div class="ff"><label>نوع العقار *</label>
-        <select id="of_type" class="inp">
-          <option value="">-- اختر --</option>
-          <option>فيلا</option><option>شقة</option><option>استوديو</option>
-          <option>مستودع</option><option>محلات</option><option>أرض</option>
-        </select>
-      </div>
-      <div class="ff"><label>نوع الصفقة *</label>
-        <select id="of_deal" class="inp">
-          <option value="">-- اختر --</option>
-          <option>بيع</option><option>إيجار</option><option>إستثمار</option>
-        </select>
-      </div>
-      <div class="ff"><label>المدينة *</label>
-        <select id="of_city" class="inp">
-          <option value="">-- اختر --</option>
-          <option>الرياض</option><option>جدة</option><option>مكة المكرمة</option>
-          <option>المدينة المنورة</option><option>الدمام</option><option>الشرقية</option>
-          <option>أبها</option><option>تبوك</option><option>القصيم</option>
-        </select>
-      </div>
-      <div class="ff"><label>الحي</label><input id="of_dist" class="inp" placeholder="الحي"></div>
+      <div class="card-title">🏗 تفاصيل العقار</div>
       <div class="grid2">
-        <div class="ff"><label>الغرف</label><input id="of_rm" class="inp" type="number" placeholder="0" min="0"></div>
-        <div class="ff"><label>المساحة م²</label><input id="of_ar" class="inp" type="number" placeholder="0" min="0"></div>
+        <div class="field"><label>نوع العقار *</label>
+          <select id="of_type" class="inp"><option value="">اختر</option><option>فيلا</option><option>شقة</option><option>استوديو</option><option>أرض</option><option>محلات</option><option>مستودع</option></select>
+        </div>
+        <div class="field"><label>نوع الصفقة *</label>
+          <select id="of_deal" class="inp"><option value="">اختر</option><option>بيع</option><option>إيجار</option><option>إستثمار</option></select>
+        </div>
       </div>
-      <div class="ff"><label>السعر المطلوب (ر.س)</label><input id="of_pr" class="inp" type="number" placeholder="0" min="0" oninput="calcComm()"></div>
-      <div class="comm-box" id="commBox">
-        <span style="color:var(--sub)">🤝 العمولة التقريبية (2.5%)</span>
-        <span class="comm-val" id="commVal">—</span>
+      <div class="grid2">
+        <div class="field"><label>المدينة *</label>
+          <select id="of_city" class="inp"><option value="">اختر</option><option>الرياض</option><option>جدة</option><option>مكة المكرمة</option><option>المدينة المنورة</option><option>الدمام</option><option>أبها</option><option>تبوك</option><option>القصيم</option></select>
+        </div>
+        <div class="field"><label>الحي</label><input id="of_dist" class="inp" placeholder="الحي"></div>
       </div>
-      <div class="ff"><label>✨ مميزات العقار</label>
-        <textarea id="of_dt" class="inp" rows="3" placeholder="اذكر مميزات عقارك..."></textarea>
+      <div class="grid2">
+        <div class="field"><label>الغرف</label><input id="of_rm" class="inp" type="number" placeholder="0" min="0"></div>
+        <div class="field"><label>المساحة م²</label><input id="of_ar" class="inp" type="number" placeholder="0" min="0"></div>
       </div>
+      <div class="field"><label>السعر المطلوب (ر.س)</label><input id="of_pr" class="inp" type="number" placeholder="0" min="0" oninput="calcComm()"></div>
+      <div class="comm-box" id="commBox"><span style="color:var(--muted)">🤝 العمولة التقريبية (2.5%)</span><span class="comm-val" id="commVal">—</span></div>
+      <div class="field"><label>✨ مميزات العقار</label><textarea id="of_dt" class="inp" rows="3" placeholder="اذكر مميزات عقارك..."></textarea></div>
     </div>
-
-    <button class="btn-send" onclick="submitForm()">📤 إرسال الطلب</button>
+    <button class="submit-btn" id="submitBtn" onclick="submitForm()">📤 إرسال الطلب</button>
   </div>
 
   <div class="success" id="successBox">
-    <div class="success-icon">✅</div>
-    <div class="success-t">تم إرسال طلبك بنجاح!</div>
-    <div class="success-s">سيتواصل معك فريق المرقاب الذهبي<br>في أقرب وقت ممكن<br><br>🏢 المرقاب الذهبي للعقارات</div>
+    <div style="font-size:56px;margin-bottom:14px">✅</div>
+    <div style="font-size:20px;font-weight:900;color:var(--green);margin-bottom:8px">تم إرسال طلبك!</div>
+    <div style="font-size:12px;color:var(--muted);line-height:1.8">سيتواصل معك فريق المرقاب الذهبي<br>في أقرب وقت ممكن<br><br>🏢 المرقاب الذهبي</div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-var _sb = null
-function getSB(){
-  try{
-    if(_sb)return _sb
-    if(window.supabase&&window.supabase.createClient){
-      _sb=window.supabase.createClient('https://ontnilzksopzrlkflxnc.supabase.co','sb_publishable_CX8aZRJci63Rr0KB6UaRJQ_GgSQBsWE')
-      return _sb
-    }
-  }catch(e){}
-  return null
-}
-
 function showToast(msg,t){
   var el=document.getElementById('toast')
   el.textContent=msg
-  el.style.background=t==='e'?'#dc2626':'#15803d'
+  el.style.background=t==='e'?'#dc2626':'#16a34a'
   el.classList.add('on')
-  setTimeout(function(){el.classList.remove('on')},2800)
+  setTimeout(function(){el.classList.remove('on')},3000)
 }
 
 function calcComm(){
@@ -126,9 +100,7 @@ function calcComm(){
   if(p>0){
     document.getElementById('commVal').textContent=Math.round(p*.025).toLocaleString('ar-SA')+' ر.س'
     box.style.display='flex'
-  }else{
-    box.style.display='none'
-  }
+  }else box.style.display='none'
 }
 
 async function submitForm(){
@@ -138,13 +110,13 @@ async function submitForm(){
   var deal=document.getElementById('of_deal').value
   var city=document.getElementById('of_city').value
 
-  if(!name){showToast('يرجى إدخال الاسم','e');return}
-  if(!phone){showToast('يرجى إدخال رقم الجوال','e');return}
-  if(!type){showToast('يرجى اختيار نوع العقار','e');return}
-  if(!deal){showToast('يرجى اختيار نوع الصفقة','e');return}
-  if(!city){showToast('يرجى اختيار المدينة','e');return}
+  if(!name)return showToast('يرجى إدخال الاسم','e')
+  if(!phone)return showToast('يرجى إدخال رقم الجوال','e')
+  if(!type)return showToast('يرجى اختيار نوع العقار','e')
+  if(!deal)return showToast('يرجى اختيار نوع الصفقة','e')
+  if(!city)return showToast('يرجى اختيار المدينة','e')
 
-  var btn=document.querySelector('.btn-send')
+  var btn=document.getElementById('submitBtn')
   btn.textContent='⏳ جاري الإرسال...'
   btn.disabled=true
 
@@ -154,23 +126,37 @@ async function submitForm(){
     property_type:type,
     deal_type:deal,
     city:city,
-    district:document.getElementById('of_dist').value,
+    district:document.getElementById('of_dist').value||null,
     rooms:Number(document.getElementById('of_rm').value)||0,
     area:Number(document.getElementById('of_ar').value)||0,
     price:Number(document.getElementById('of_pr').value)||0,
-    details:document.getElementById('of_dt').value
+    details:document.getElementById('of_dt').value||null
   }
 
   try{
-    var sb=getSB()
-    if(sb){
-      var r=await sb.from('owner_requests').insert([data])
-      if(r.error)throw r.error
+    var res=await fetch('https://ontnilzksopzrlkflxnc.supabase.co/rest/v1/owner_requests',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'apikey':'sb_publishable_CX8aZRJci63Rr0KB6UaRJQ_GgSQBsWE',
+        'Authorization':'Bearer sb_publishable_CX8aZRJci63Rr0KB6UaRJQ_GgSQBsWE',
+        'Prefer':'return=minimal'
+      },
+      body:JSON.stringify(data)
+    })
+    if(res.ok){
+      document.getElementById('formArea').style.display='none'
+      document.getElementById('successBox').style.display='block'
+    }else{
+      var err=await res.text()
+      console.log('Error:',err)
+      showToast('حدث خطأ: '+res.status,'e')
+      btn.textContent='📤 إرسال الطلب'
+      btn.disabled=false
     }
-    document.getElementById('formWrap').style.display='none'
-    document.getElementById('successBox').style.display='block'
   }catch(e){
-    showToast('حدث خطأ، حاول مجدداً','e')
+    console.log('Fetch error:',e)
+    showToast('تعذر الاتصال، تحقق من الإنترنت','e')
     btn.textContent='📤 إرسال الطلب'
     btn.disabled=false
   }
